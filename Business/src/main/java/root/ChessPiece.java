@@ -49,7 +49,7 @@ public enum ChessPiece {
     }
 
     List<ChessMove> getPossibleMoves(ChessGame chessGame){
-        return new ArrayList<>();
+        return type.getPossibleMoves(chessGame, space);
     }
 
     public enum Color{
@@ -58,12 +58,44 @@ public enum ChessPiece {
     }
 
     public enum Type {
-        Rook,
-        Knight,
-        Bishop,
-        Queen,
-        King,
-        Pawn;
+        Rook{
+            @Override
+            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+                return null;
+            }
+        },
+        Knight{
+            @Override
+            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+                return null;
+            }
+        },
+        Bishop{
+            @Override
+            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+                return null;
+            }
+        },
+        Queen{
+            @Override
+            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+                return null;
+            }
+        },
+        King{
+            @Override
+            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+                return null;
+            }
+        },
+        Pawn{
+            @Override
+            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+                return null;
+            }
+        };
+
+        public abstract List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space);
     }
 
     public enum Status{

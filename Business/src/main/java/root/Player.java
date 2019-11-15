@@ -7,6 +7,7 @@ public class Player {
     public final String name;
     public final ChessPiece.Color color;
     public final ChessGame chessGame;
+    private final Random random = new Random();
 
     public List<ChessPiece> activeChessPieces;
     public List<ChessPiece> capturedChessPieces = new ArrayList<>();
@@ -19,13 +20,16 @@ public class Player {
 
     public ChessMove move() {
         List<ChessMove> chessMoves = getAllPossibleMoves();
-
-        return chessMoves.get(0);
+        return chessMoves.get(random.nextInt(chessMoves.size()));
     }
 
     private List<ChessMove> getAllPossibleMoves() {
         List<ChessMove> possibleMoves = new ArrayList<>();
-        // Add all moves into this list
+
+        activeChessPieces.stream()
+                .flatMap(chessPiece->chessPiece.getPossibleMoves(chessGame).stream())
+                .collect(Collectors.toList());
+
         return possibleMoves;
     }
 

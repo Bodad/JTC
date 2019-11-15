@@ -1,5 +1,8 @@
 package root;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessGame {
     ChessBoard chessBoard = new ChessBoard();
     Player blackPlayer = new Player("Black Player", ChessPiece.Color.Black, this);
@@ -7,6 +10,8 @@ public class ChessGame {
 
     Player offensivePlayer = whitePlayer;
     Player defensivePlayer = blackPlayer;
+
+    List<ChessMove> chessMoves = new ArrayList<>();
 
     public void start() {
         chessBoard.reset();
@@ -30,6 +35,8 @@ public class ChessGame {
     }
 
     private boolean makeMove(ChessMove chessMove) {
+        chessMoves.add(chessMove);
+
         ChessBoard.Space toSpace = chessBoard.spaces.at(chessMove.to);
         ChessPiece capturedChessPiece = toSpace.occupyingChessPiece;
         if (capturedChessPiece != null) {
