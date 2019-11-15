@@ -18,7 +18,15 @@ public class Player {
     }
 
     public ChessMove move() {
-        return null;
+        List<ChessMove> chessMoves = getAllPossibleMoves();
+
+        return chessMoves.get(0);
+    }
+
+    private List<ChessMove> getAllPossibleMoves() {
+        List<ChessMove> possibleMoves = new ArrayList<>();
+        // Add all moves into this list
+        return possibleMoves;
     }
 
     public void reset() {
