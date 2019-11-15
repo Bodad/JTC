@@ -82,7 +82,7 @@ public class ChessBoard {
 
         @Override
         public String toString() {
-            return String.format("%s - %s", coordinate, occupyingChessPiece);
+            return String.format("%s", coordinate);
         }
 
         public void resetChessPiece(ChessPiece chessPiece) {
@@ -105,7 +105,8 @@ public class ChessBoard {
 
         public Space getRelativeNeighbor(int x, int y) {
             Point xyCoordinates = getXYCoordinates();
-            return spaces.at(ECoordinate.get(xyCoordinates.x+x, xyCoordinates.y+y));
+            ECoordinate newCoordinate = ECoordinate.get(xyCoordinates.x + x, xyCoordinates.y + y);
+            return spaces.at(newCoordinate);
         }
     }
 
@@ -122,7 +123,7 @@ public class ChessBoard {
         public static ECoordinate get(int x, int y){
             if (x<0 || x>7 || y<0 || y>7) return null;
 
-            String format = String.format("%c%d", y + 65, x+1);
+            String format = String.format("%c%d", x + 65, y+1);
             ECoordinate eCoordinate = valueOf(format);
             return eCoordinate;
         }

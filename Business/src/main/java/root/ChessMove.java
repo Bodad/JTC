@@ -3,17 +3,25 @@ package root;
 import java.awt.*;
 
 public class ChessMove {
-    public final ChessBoard.ECoordinate from;
-    public final ChessBoard.ECoordinate to;
+    public final ChessPiece fromChessPiece;
+    public final ChessBoard.Space from;
+    public final ChessBoard.Space to;
+    public final ChessPiece toChessPiece;
 
-    public ChessMove(ChessBoard.ECoordinate from, ChessBoard.ECoordinate to) {
+    public ChessMove(ChessBoard.Space from, ChessBoard.Space to) {
         this.from = from;
         this.to = to;
+        this.fromChessPiece = from.occupyingChessPiece;
+        this.toChessPiece = to.occupyingChessPiece;
     }
 
     @Override
     public String toString() {
-        return String.format("%s to %s", from, to);
+        if (toChessPiece  != null){
+            return String.format("%s %s from %s to %s capturing %s %s", fromChessPiece.color, fromChessPiece.type, from.coordinate, to.coordinate, toChessPiece.color, toChessPiece.type);
+        }else{
+            return String.format("%s %s from %s to %s", fromChessPiece.color, fromChessPiece.type, from.coordinate, to.coordinate);
+        }
     }
 
     public enum Direction {

@@ -37,14 +37,14 @@ public class ChessGame {
 
     private void switchPlayers() {
         Player temp = offensivePlayer;
-        defensivePlayer = offensivePlayer;
-        offensivePlayer = temp;
+        offensivePlayer = defensivePlayer;
+        defensivePlayer = temp;
     }
 
     private boolean makeMove(ChessMove chessMove) {
         chessMoves.add(chessMove);
 
-        ChessBoard.Space toSpace = chessBoard.spaces.at(chessMove.to);
+        ChessBoard.Space toSpace = chessMove.to;
         ChessPiece capturedChessPiece = toSpace.occupyingChessPiece;
         if (capturedChessPiece != null) {
             capturedChessPiece.status = ChessPiece.Status.Captured;
@@ -53,7 +53,7 @@ public class ChessGame {
             if (capturedChessPiece.type == ChessPiece.Type.King) return true;
         }
 
-        ChessBoard.Space fromSpace = chessBoard.spaces.at(chessMove.from);
+        ChessBoard.Space fromSpace = chessMove.from;
         ChessPiece movingChessPiece = fromSpace.occupyingChessPiece;
 
         fromSpace.occupyingChessPiece = null;

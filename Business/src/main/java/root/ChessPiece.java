@@ -139,13 +139,13 @@ public enum ChessPiece {
                 List<ChessMove> possibleMoves = new ArrayList<>();
 
                 ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, 1);
-                if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space.coordinate, leftSpace.coordinate));
+                if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space, leftSpace));
 
                 ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, 1);
-                if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space.coordinate, rightSpace.coordinate));
+                if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space, rightSpace));
 
                 ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, 1);
-                if (frontSpace != null && frontSpace.occupyingChessPiece == null) possibleMoves.add(new ChessMove(space.coordinate, frontSpace.coordinate));
+                if (frontSpace != null && frontSpace.occupyingChessPiece == null) possibleMoves.add(new ChessMove(space, frontSpace));
 
                 return possibleMoves;
             }
@@ -155,10 +155,10 @@ public enum ChessPiece {
             ChessBoard.Space relativeNeighbor = space.getRelativeNeighbor(x, y);
             if (relativeNeighbor == null) return;
             if (relativeNeighbor.occupyingChessPiece == null){
-                possibleMoves.add(new ChessMove(space.coordinate, relativeNeighbor.coordinate));
+                possibleMoves.add(new ChessMove(space, relativeNeighbor));
             }else{
                 if (relativeNeighbor.occupyingChessPiece.color != chessGame.offensivePlayer.color){
-                    possibleMoves.add(new ChessMove(space.coordinate, relativeNeighbor.coordinate));
+                    possibleMoves.add(new ChessMove(space, relativeNeighbor));
                 }
             }
         }
@@ -174,10 +174,10 @@ public enum ChessPiece {
                     done = true;
                 }else {
                     if (newSpace.occupyingChessPiece == null) {
-                        possibleMoves.add(new ChessMove(space.coordinate, newSpace.coordinate));
+                        possibleMoves.add(new ChessMove(space, newSpace));
                     } else {
                         if (newSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) {
-                            possibleMoves.add(new ChessMove(space.coordinate, newSpace.coordinate));
+                            possibleMoves.add(new ChessMove(space, newSpace));
                         }
                         done = true;
                     }
