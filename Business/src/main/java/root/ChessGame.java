@@ -5,15 +5,47 @@ public class ChessGame {
     Player blackPlayer = new Player("Black Player", ChessPiece.Color.Black, this);
     Player whitePlayer = new Player("White Player", ChessPiece.Color.White, this);
 
-    private boolean isGameOver = false;
+    Player offensivePlayer = whitePlayer;
+    Player defensivePlayer = blackPlayer;
 
     public void start() {
-        chessBoard.resetPieces();
-        isGameOver = false;
+        chessBoard.reset();
+        blackPlayer.reset();
+        whitePlayer.reset();
+        if (offensivePlayer != whitePlayer) switchPlayers();
 
-        while (!isGameOver){
-            whitePlayer.move();
-            if (!isGameOver) blackPlayer.move();
+        boolean isGameOver = false;
+
+        while (!isGameOver) {
+            ChessMove chessMove = offensivePlayer.move();
+            isGameOver = makeMove(chessMove);
+            switchPlayers();
         }
     }
+
+    private void switchPlayers() {
+        Player temp = offensivePlayer;
+        defensivePlayer = offensivePlayer;
+        offensivePlayer = temp;
+    }
+
+    private boolean makeMove(ChessMove chessMove) {
+        ChessBoard.Space toSpace = chessBoard.spaces.at(chessMove.to);
+        ChessPiece capturedChessPiece = toSpace.occupyingChessPiece;
+        if (capturedChessPiece != null) {
+            capturedChessPiece.status = ChessPiece.Status.Captured;
+            capturedChessPiece.space = null;
+            defensivePlayer.removePiece(capturedChessPiece);
+            if (capturedChessPiece.type == ChessPiece.Type.King) return true;
+        }
+
+        ChessBoard.Space fromSpace = chessBoard.spaces.at(chessMove.from);
+        ChessPiece movingChessPiece = fromSpace.occupyingChessPiece;
+
+        fromSpace.occupyingChessPiece = null;
+        toSpace.occupyingChessPiece = movingChessPiece;
+        movingChessPiece.space = toSpace;
+        return false;
+    }
+
 }

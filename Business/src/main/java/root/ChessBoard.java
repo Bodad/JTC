@@ -14,46 +14,46 @@ public class ChessBoard {
 
     }
     
-    public void resetPieces(){
+    public void reset(){
         spaces.clear();
-        spaces.at(ECoordinate.A1).occupyingChessPiece = ChessPiece.WhiteRook1;
-        spaces.at(ECoordinate.B1).occupyingChessPiece = ChessPiece.WhiteKnight1;
-        spaces.at(ECoordinate.C1).occupyingChessPiece = ChessPiece.WhiteBishop1;
-        spaces.at(ECoordinate.D1).occupyingChessPiece = ChessPiece.WhiteQueen;
-        spaces.at(ECoordinate.E1).occupyingChessPiece = ChessPiece.WhiteKing;
-        spaces.at(ECoordinate.F1).occupyingChessPiece = ChessPiece.WhiteBishop2;
-        spaces.at(ECoordinate.G1).occupyingChessPiece = ChessPiece.WhiteKnight2;
-        spaces.at(ECoordinate.H1).occupyingChessPiece = ChessPiece.WhiteRook2;
+        spaces.at(ECoordinate.A1).resetChessPiece(ChessPiece.WhiteRook1);
+        spaces.at(ECoordinate.B1).resetChessPiece(ChessPiece.WhiteKnight1);
+        spaces.at(ECoordinate.C1).resetChessPiece(ChessPiece.WhiteBishop1);
+        spaces.at(ECoordinate.D1).resetChessPiece(ChessPiece.WhiteQueen);
+        spaces.at(ECoordinate.E1).resetChessPiece(ChessPiece.WhiteKing);
+        spaces.at(ECoordinate.F1).resetChessPiece(ChessPiece.WhiteBishop2);
+        spaces.at(ECoordinate.G1).resetChessPiece(ChessPiece.WhiteKnight2);
+        spaces.at(ECoordinate.H1).resetChessPiece(ChessPiece.WhiteRook2);
         
-        spaces.at(ECoordinate.A2).occupyingChessPiece = ChessPiece.WhitePawn1;
-        spaces.at(ECoordinate.B2).occupyingChessPiece = ChessPiece.WhitePawn2;
-        spaces.at(ECoordinate.C2).occupyingChessPiece = ChessPiece.WhitePawn3;
-        spaces.at(ECoordinate.D2).occupyingChessPiece = ChessPiece.WhitePawn4;
-        spaces.at(ECoordinate.E2).occupyingChessPiece = ChessPiece.WhitePawn5;
-        spaces.at(ECoordinate.F2).occupyingChessPiece = ChessPiece.WhitePawn6;
-        spaces.at(ECoordinate.G2).occupyingChessPiece = ChessPiece.WhitePawn7;
-        spaces.at(ECoordinate.H2).occupyingChessPiece = ChessPiece.WhitePawn8;
+        spaces.at(ECoordinate.A2).resetChessPiece(ChessPiece.WhitePawn1);
+        spaces.at(ECoordinate.B2).resetChessPiece(ChessPiece.WhitePawn2);
+        spaces.at(ECoordinate.C2).resetChessPiece(ChessPiece.WhitePawn3);
+        spaces.at(ECoordinate.D2).resetChessPiece(ChessPiece.WhitePawn4);
+        spaces.at(ECoordinate.E2).resetChessPiece(ChessPiece.WhitePawn5);
+        spaces.at(ECoordinate.F2).resetChessPiece(ChessPiece.WhitePawn6);
+        spaces.at(ECoordinate.G2).resetChessPiece(ChessPiece.WhitePawn7);
+        spaces.at(ECoordinate.H2).resetChessPiece(ChessPiece.WhitePawn8);
 
-        spaces.at(ECoordinate.A8).occupyingChessPiece = ChessPiece.BlackRook1;
-        spaces.at(ECoordinate.B8).occupyingChessPiece = ChessPiece.BlackKnight1;
-        spaces.at(ECoordinate.C8).occupyingChessPiece = ChessPiece.BlackBishop1;
-        spaces.at(ECoordinate.D8).occupyingChessPiece = ChessPiece.BlackQueen;
-        spaces.at(ECoordinate.E8).occupyingChessPiece = ChessPiece.BlackKing;
-        spaces.at(ECoordinate.F8).occupyingChessPiece = ChessPiece.BlackBishop2;
-        spaces.at(ECoordinate.G8).occupyingChessPiece = ChessPiece.BlackKnight2;
-        spaces.at(ECoordinate.H8).occupyingChessPiece = ChessPiece.BlackRook2;
+        spaces.at(ECoordinate.A8).resetChessPiece(ChessPiece.BlackRook1);
+        spaces.at(ECoordinate.B8).resetChessPiece(ChessPiece.BlackKnight1);
+        spaces.at(ECoordinate.C8).resetChessPiece(ChessPiece.BlackBishop1);
+        spaces.at(ECoordinate.D8).resetChessPiece(ChessPiece.BlackQueen);
+        spaces.at(ECoordinate.E8).resetChessPiece(ChessPiece.BlackKing);
+        spaces.at(ECoordinate.F8).resetChessPiece(ChessPiece.BlackBishop2);
+        spaces.at(ECoordinate.G8).resetChessPiece(ChessPiece.BlackKnight2);
+        spaces.at(ECoordinate.H8).resetChessPiece(ChessPiece.BlackRook2);
 
-        spaces.at(ECoordinate.A7).occupyingChessPiece = ChessPiece.BlackPawn1;
-        spaces.at(ECoordinate.B7).occupyingChessPiece = ChessPiece.BlackPawn2;
-        spaces.at(ECoordinate.C7).occupyingChessPiece = ChessPiece.BlackPawn3;
-        spaces.at(ECoordinate.D7).occupyingChessPiece = ChessPiece.BlackPawn4;
-        spaces.at(ECoordinate.E7).occupyingChessPiece = ChessPiece.BlackPawn5;
-        spaces.at(ECoordinate.F7).occupyingChessPiece = ChessPiece.BlackPawn6;
-        spaces.at(ECoordinate.G7).occupyingChessPiece = ChessPiece.BlackPawn7;
-        spaces.at(ECoordinate.H7).occupyingChessPiece = ChessPiece.BlackPawn8;
+        spaces.at(ECoordinate.A7).resetChessPiece(ChessPiece.BlackPawn1);
+        spaces.at(ECoordinate.B7).resetChessPiece(ChessPiece.BlackPawn2);
+        spaces.at(ECoordinate.C7).resetChessPiece(ChessPiece.BlackPawn3);
+        spaces.at(ECoordinate.D7).resetChessPiece(ChessPiece.BlackPawn4);
+        spaces.at(ECoordinate.E7).resetChessPiece(ChessPiece.BlackPawn5);
+        spaces.at(ECoordinate.F7).resetChessPiece(ChessPiece.BlackPawn6);
+        spaces.at(ECoordinate.G7).resetChessPiece(ChessPiece.BlackPawn7);
+        spaces.at(ECoordinate.H7).resetChessPiece(ChessPiece.BlackPawn8);
     }
 
-    private static class Spaces {
+    public static class Spaces {
         Map<ECoordinate, Space> spaces = new HashMap<>();
 
         public void define(ECoordinate coordinate) {
@@ -68,6 +68,7 @@ public class ChessBoard {
         public Space at(ECoordinate coordinate) {
             return spaces.get(coordinate);
         }
+
     }
 
     public static class Space{
@@ -81,6 +82,11 @@ public class ChessBoard {
         @Override
         public String toString() {
             return String.format("%s - %s", coordinate, occupyingChessPiece);
+        }
+
+        public void resetChessPiece(ChessPiece chessPiece) {
+            occupyingChessPiece = chessPiece;
+            chessPiece.status= ChessPiece.Status.Active;
         }
     }
 

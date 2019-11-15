@@ -40,13 +40,15 @@ public enum ChessPiece {
 
     public final Type type;
     public final Color color;
+    public Status status;
+    public ChessBoard.Space space;
 
     ChessPiece(Type chessPieceType, Color chessPieceColor){
         this.type = chessPieceType;
         this.color = chessPieceColor;
     }
 
-    List<ChessMove> getPossibleMoves(ChessBoard chessBoard){
+    List<ChessMove> getPossibleMoves(ChessGame chessGame){
         return new ArrayList<>();
     }
 
@@ -62,8 +64,11 @@ public enum ChessPiece {
         Queen,
         King,
         Pawn;
+    }
 
-
+    public enum Status{
+        Active,
+        Captured
     }
 
 }
