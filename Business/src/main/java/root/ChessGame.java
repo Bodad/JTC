@@ -31,6 +31,8 @@ public class ChessGame {
             isGameOver = makeMove(chessMove);
             switchPlayers();
         }
+
+
     }
 
     private void switchPlayers() {

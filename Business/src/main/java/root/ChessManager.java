@@ -13,16 +13,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class ChessManager extends BusinessManager {
-    public ChessManager(){
+    public ChessManager() {
         super("Chess Manager");
     }
 
+
     public void run() {
-        ChessGame chessGame = new ChessGame();
-        chessGame.start();
+        List<ChessGame> chessGames = new ArrayList<>();
+
+        for (int i = 0; i < 100; i++) {
+            ChessGame chessGame = new ChessGame();
+            chessGame.start();
+            chessGames.add(chessGame);
+        }
 
 
         getHealthCheck();

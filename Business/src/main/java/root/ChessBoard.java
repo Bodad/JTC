@@ -87,6 +87,7 @@ public class ChessBoard {
 
         public void resetChessPiece(ChessPiece chessPiece) {
             occupyingChessPiece = chessPiece;
+            chessPiece.space = this;
             chessPiece.status= ChessPiece.Status.Active;
         }
 
@@ -101,6 +102,11 @@ public class ChessBoard {
         public Space getNeighbor(ChessMove.Direction moveDirection) {
             return moveDirection.getSpace(this);
         }
+
+        public Space getRelativeNeighbor(int x, int y) {
+            Point xyCoordinates = getXYCoordinates();
+            return spaces.at(ECoordinate.get(xyCoordinates.x+x, xyCoordinates.y+y));
+        }
     }
 
     public enum ECoordinate {
@@ -114,6 +120,8 @@ public class ChessBoard {
         H1,H2,H3,H4,H5,H6,H7,H8;
 
         public static ECoordinate get(int x, int y){
+            if (x<0 || x>7 || y<0 || y>7) return null;
+
             String format = String.format("%c%d", y + 65, x+1);
             ECoordinate eCoordinate = valueOf(format);
             return eCoordinate;
@@ -121,7 +129,8 @@ public class ChessBoard {
 
         public Point getXYCoordinates() {
             char[] chars = this.name().toCharArray();
-            return new Point(chars[1]-65, chars[0]-49);
+            Point point = new Point(chars[0] - 65, chars[1] - 49);
+            return point;
         }
     }
 

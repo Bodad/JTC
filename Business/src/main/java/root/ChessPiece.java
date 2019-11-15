@@ -50,7 +50,8 @@ public enum ChessPiece {
     }
 
     List<ChessMove> getPossibleMoves(ChessGame chessGame){
-        return type.getPossibleMoves(chessGame, space);
+        List<ChessMove> possibleMoves = type.getPossibleMoves(chessGame, space);
+        return possibleMoves;
     }
 
     public enum Color{
@@ -74,7 +75,17 @@ public enum ChessPiece {
         Knight{
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
-                return null;
+                List<ChessMove> possibleMoves = new ArrayList<>();
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, 2);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 2);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, -2, 1);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, -2, -1);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, -2);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, -2);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 2, 1);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 2, -1);
+
+                return possibleMoves;
             }
         },
         Bishop{
@@ -92,21 +103,65 @@ public enum ChessPiece {
         Queen{
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
-                return null;
+                List<ChessMove> possibleMoves = new ArrayList<>();
+                Point xyCoordinates = space.getXYCoordinates();
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Right);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Left);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Up);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Down);
+
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpRight);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpLeft);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownRight);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownLeft);
+                return possibleMoves;
             }
         },
         King{
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
-                return null;
+                List<ChessMove> possibleMoves = new ArrayList<>();
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 0, 1);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, 1);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, 0);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, -1);
+
+                addPossibleRelativeMove(chessGame, space, possibleMoves, 0, -1);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, -1);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 0);
+                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 1);
+                return possibleMoves;
             }
         },
         Pawn{
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
-                return null;
+                List<ChessMove> possibleMoves = new ArrayList<>();
+
+                ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, 1);
+                if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space.coordinate, leftSpace.coordinate));
+
+                ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, 1);
+                if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space.coordinate, rightSpace.coordinate));
+
+                ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, 1);
+                if (frontSpace != null && frontSpace.occupyingChessPiece == null) possibleMoves.add(new ChessMove(space.coordinate, frontSpace.coordinate));
+
+                return possibleMoves;
             }
         };
+
+        private static void addPossibleRelativeMove(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, int x, int y) {
+            ChessBoard.Space relativeNeighbor = space.getRelativeNeighbor(x, y);
+            if (relativeNeighbor == null) return;
+            if (relativeNeighbor.occupyingChessPiece == null){
+                possibleMoves.add(new ChessMove(space.coordinate, relativeNeighbor.coordinate));
+            }else{
+                if (relativeNeighbor.occupyingChessPiece.color != chessGame.offensivePlayer.color){
+                    possibleMoves.add(new ChessMove(space.coordinate, relativeNeighbor.coordinate));
+                }
+            }
+        }
 
         private static void addDirectionalMoves(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, ChessMove.Direction moveDirection) {
             Point xyCoordinates = space.getXYCoordinates();
@@ -115,12 +170,15 @@ public enum ChessPiece {
             ChessBoard.Space newSpace = space;
             while (!done){
                 newSpace = newSpace.getNeighbor(moveDirection);
-
-                if (newSpace.occupyingChessPiece == null){
-                    possibleMoves.add(new ChessMove(space.coordinate, newSpace.coordinate));
-                }else{
-                    if (newSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color){
+                if (newSpace == null){
+                    done = true;
+                }else {
+                    if (newSpace.occupyingChessPiece == null) {
                         possibleMoves.add(new ChessMove(space.coordinate, newSpace.coordinate));
+                    } else {
+                        if (newSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) {
+                            possibleMoves.add(new ChessMove(space.coordinate, newSpace.coordinate));
+                        }
                         done = true;
                     }
                 }

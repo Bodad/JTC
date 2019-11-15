@@ -11,6 +11,11 @@ public class ChessMove {
         this.to = to;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s to %s", from, to);
+    }
+
     public enum Direction {
         Left {
             @Override

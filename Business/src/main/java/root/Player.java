@@ -20,13 +20,11 @@ public class Player {
 
     public ChessMove move() {
         List<ChessMove> chessMoves = getAllPossibleMoves();
-        return chessMoves.get(random.nextInt(chessMoves.size()));
+        return chessMoves.get(random.nextInt(chessMoves.size()-1));
     }
 
     private List<ChessMove> getAllPossibleMoves() {
-        List<ChessMove> possibleMoves = new ArrayList<>();
-
-        activeChessPieces.stream()
+        List<ChessMove> possibleMoves = activeChessPieces.stream()
                 .flatMap(chessPiece->chessPiece.getPossibleMoves(chessGame).stream())
                 .collect(Collectors.toList());
 
