@@ -1,5 +1,6 @@
 package root;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +62,13 @@ public enum ChessPiece {
         Rook{
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
-                return null;
+                List<ChessMove> possibleMoves = new ArrayList<>();
+                Point xyCoordinates = space.getXYCoordinates();
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Right);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Left);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Up);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Down);
+                return possibleMoves;
             }
         },
         Knight{
@@ -73,7 +80,13 @@ public enum ChessPiece {
         Bishop{
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
-                return null;
+                List<ChessMove> possibleMoves = new ArrayList<>();
+                Point xyCoordinates = space.getXYCoordinates();
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpRight);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpLeft);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownRight);
+                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownLeft);
+                return possibleMoves;
             }
         },
         Queen{
@@ -94,6 +107,25 @@ public enum ChessPiece {
                 return null;
             }
         };
+
+        private static void addDirectionalMoves(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, ChessMove.Direction moveDirection) {
+            Point xyCoordinates = space.getXYCoordinates();
+
+            boolean done = false;
+            ChessBoard.Space newSpace = space;
+            while (!done){
+                newSpace = newSpace.getNeighbor(moveDirection);
+
+                if (newSpace.occupyingChessPiece == null){
+                    possibleMoves.add(new ChessMove(space.coordinate, newSpace.coordinate));
+                }else{
+                    if (newSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color){
+                        possibleMoves.add(new ChessMove(space.coordinate, newSpace.coordinate));
+                        done = true;
+                    }
+                }
+            }
+        }
 
         public abstract List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space);
     }

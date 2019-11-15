@@ -1,13 +1,14 @@
 package root;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ChessBoard {
-    final Spaces spaces;
+    public final static Spaces spaces = new Spaces();
 
     public ChessBoard() {
-        this.spaces = new Spaces();
         for (ECoordinate coordinate : ECoordinate.values()){
             spaces.define(coordinate);
         }
@@ -62,7 +63,7 @@ public class ChessBoard {
         }
 
         public void clear() {
-            spaces.clear();
+            spaces.values().stream().forEach(space->space.clear());
         }
 
         public Space at(ECoordinate coordinate) {
@@ -88,6 +89,18 @@ public class ChessBoard {
             occupyingChessPiece = chessPiece;
             chessPiece.status= ChessPiece.Status.Active;
         }
+
+        public void clear() {
+            occupyingChessPiece = null;
+        }
+
+        public Point getXYCoordinates() {
+            return coordinate.getXYCoordinates();
+        }
+
+        public Space getNeighbor(ChessMove.Direction moveDirection) {
+            return moveDirection.getSpace(this);
+        }
     }
 
     public enum ECoordinate {
@@ -100,8 +113,15 @@ public class ChessBoard {
         G1,G2,G3,G4,G5,G6,G7,G8,
         H1,H2,H3,H4,H5,H6,H7,H8;
 
-        public ECoordinate get(int x, int y){
-            return valueOf(String.format("%c%d", x+64, y));
+        public static ECoordinate get(int x, int y){
+            String format = String.format("%c%d", y + 65, x+1);
+            ECoordinate eCoordinate = valueOf(format);
+            return eCoordinate;
+        }
+
+        public Point getXYCoordinates() {
+            char[] chars = this.name().toCharArray();
+            return new Point(chars[1]-65, chars[0]-49);
         }
     }
 

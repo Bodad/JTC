@@ -20,6 +20,11 @@ public class ChessGame {
         if (offensivePlayer != whitePlayer) switchPlayers();
 
         boolean isGameOver = false;
+        ChessBoard.ECoordinate eCoordinate = ChessBoard.ECoordinate.get(0, 0);
+        ChessBoard.Space A1 = chessBoard.spaces.at(eCoordinate);
+        ChessBoard.Space B1 = chessBoard.spaces.at(ChessBoard.ECoordinate.get(1, 0));
+        ChessBoard.Space A2 = chessBoard.spaces.at(ChessBoard.ECoordinate.get(0, 1));
+
 
         while (!isGameOver) {
             ChessMove chessMove = offensivePlayer.move();
