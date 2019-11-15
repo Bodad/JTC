@@ -20,7 +20,7 @@ public class Player {
 
     public ChessMove move() {
         List<ChessMove> chessMoves = getAllPossibleMoves();
-        return chessMoves.get(random.nextInt(chessMoves.size()-1));
+        return chessMoves.get(random.nextInt(chessMoves.size()));
     }
 
     private List<ChessMove> getAllPossibleMoves() {

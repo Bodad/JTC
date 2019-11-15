@@ -138,14 +138,34 @@ public enum ChessPiece {
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
 
-                ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, 1);
-                if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space, leftSpace));
+                if (space.occupyingChessPiece.color == Color.White) {
 
-                ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, 1);
-                if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) possibleMoves.add(new ChessMove(space, rightSpace));
+                    ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, 1);
+                    if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                        possibleMoves.add(new ChessMove(space, leftSpace));
 
-                ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, 1);
-                if (frontSpace != null && frontSpace.occupyingChessPiece == null) possibleMoves.add(new ChessMove(space, frontSpace));
+                    ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, 1);
+                    if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                        possibleMoves.add(new ChessMove(space, rightSpace));
+
+                    ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, 1);
+                    if (frontSpace != null && frontSpace.occupyingChessPiece == null)
+                        possibleMoves.add(new ChessMove(space, frontSpace));
+                }else{
+
+                    ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, -1);
+                    if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                        possibleMoves.add(new ChessMove(space, leftSpace));
+
+                    ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, -1);
+                    if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                        possibleMoves.add(new ChessMove(space, rightSpace));
+
+                    ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, -1);
+                    if (frontSpace != null && frontSpace.occupyingChessPiece == null)
+                        possibleMoves.add(new ChessMove(space, frontSpace));
+
+                }
 
                 return possibleMoves;
             }
