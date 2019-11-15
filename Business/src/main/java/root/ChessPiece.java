@@ -1,18 +1,42 @@
 package root;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum ChessPiece {
-    BlackRook(Type.Rook, Color.Black),
-    BlackKnight(Type.Knight, Color.Black),
-    BlackBishop(Type.Bishop, Color.Black),
+    BlackRook1(Type.Rook, Color.Black),
+    BlackRook2(Type.Rook, Color.Black),
+    BlackKnight1(Type.Knight, Color.Black),
+    BlackKnight2(Type.Knight, Color.Black),
+    BlackBishop1(Type.Bishop, Color.Black),
+    BlackBishop2(Type.Bishop, Color.Black),
     BlackQueen(Type.Queen, Color.Black),
     BlackKing(Type.King, Color.Black),
-    BlackPawn(Type.Pawn, Color.Black),
-    WhiteRook(Type.Rook, Color.White),
-    WhiteKnight(Type.Knight, Color.White),
-    WhiteBishop(Type.Bishop, Color.White),
+    BlackPawn1(Type.Pawn, Color.Black),
+    BlackPawn2(Type.Pawn, Color.Black),
+    BlackPawn3(Type.Pawn, Color.Black),
+    BlackPawn4(Type.Pawn, Color.Black),
+    BlackPawn5(Type.Pawn, Color.Black),
+    BlackPawn6(Type.Pawn, Color.Black),
+    BlackPawn7(Type.Pawn, Color.Black),
+    BlackPawn8(Type.Pawn, Color.Black),
+
+    WhiteRook1(Type.Rook, Color.White),
+    WhiteRook2(Type.Rook, Color.White),
+    WhiteKnight1(Type.Knight, Color.White),
+    WhiteKnight2(Type.Knight, Color.White),
+    WhiteBishop1(Type.Bishop, Color.White),
+    WhiteBishop2(Type.Bishop, Color.White),
     WhiteQueen(Type.Queen, Color.White),
     WhiteKing(Type.King, Color.White),
-    WhitePawn(Type.Pawn, Color.White);
+    WhitePawn1(Type.Pawn, Color.White),
+    WhitePawn2(Type.Pawn, Color.White),
+    WhitePawn3(Type.Pawn, Color.White),
+    WhitePawn4(Type.Pawn, Color.White),
+    WhitePawn5(Type.Pawn, Color.White),
+    WhitePawn6(Type.Pawn, Color.White),
+    WhitePawn7(Type.Pawn, Color.White),
+    WhitePawn8(Type.Pawn, Color.White);
 
     public final Type type;
     public final Color color;
@@ -20,6 +44,10 @@ public enum ChessPiece {
     ChessPiece(Type chessPieceType, Color chessPieceColor){
         this.type = chessPieceType;
         this.color = chessPieceColor;
+    }
+
+    List<ChessMove> getPossibleMoves(ChessBoard chessBoard){
+        return new ArrayList<>();
     }
 
     public enum Color{
@@ -34,6 +62,8 @@ public enum ChessPiece {
         Queen,
         King,
         Pawn;
+
+
     }
 
 }

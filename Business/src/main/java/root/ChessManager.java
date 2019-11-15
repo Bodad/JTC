@@ -21,7 +21,8 @@ public class ChessManager extends BusinessManager {
     }
 
     public void run() {
-        ChessBoard chessBoard = new ChessBoard();
+        ChessGame chessGame = new ChessGame();
+        chessGame.start();
 
 
         getHealthCheck();
