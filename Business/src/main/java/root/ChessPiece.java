@@ -43,24 +43,38 @@ public enum ChessPiece {
     public final Color color;
     public Status status;
     public ChessBoard.Space space;
+    public int numberOfMoves;
+    public Type actAsType;
 
-    ChessPiece(Type chessPieceType, Color chessPieceColor){
+    ChessPiece(Type chessPieceType, Color chessPieceColor) {
         this.type = chessPieceType;
         this.color = chessPieceColor;
+        this.actAsType = chessPieceType;
     }
 
-    List<ChessMove> getPossibleMoves(ChessGame chessGame){
-        List<ChessMove> possibleMoves = type.getPossibleMoves(chessGame, space);
+    boolean isFirstMove() {
+        return numberOfMoves == 0;
+    }
+
+    List<ChessMove> getPossibleMoves(ChessGame chessGame) {
+        List<ChessMove> possibleMoves = actAsType.getPossibleMoves(chessGame, space);
         return possibleMoves;
     }
 
-    public enum Color{
+    public void move(ChessBoard.Space fromSpace, ChessBoard.Space toSpace) {
+            fromSpace.occupyingChessPiece = null;
+            toSpace.occupyingChessPiece = this;
+            space = toSpace;
+            numberOfMoves++;
+    }
+
+    public enum Color {
         Black,
         White;
     }
 
     public enum Type {
-        Rook{
+        Rook {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -72,7 +86,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Knight{
+        Knight {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -88,7 +102,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Bishop{
+        Bishop {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -100,7 +114,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Queen{
+        Queen {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -117,7 +131,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        King{
+        King {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -130,54 +144,106 @@ public enum ChessPiece {
                 addPossibleRelativeMove(chessGame, space, possibleMoves, -1, -1);
                 addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 0);
                 addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 1);
+
+                // consider castle
+                if (space.occupyingChessPiece.numberOfMoves == 0) {
+                    if (chessGame.offensivePlayer.color == Color.Black) {
+                        ChessPiece rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.A8).occupyingChessPiece;
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.B8).occupyingChessPiece == null)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.C8).occupyingChessPiece == null)) {
+                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.B8), ChessMove.Type.Castle));
+                        }
+
+                        rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.H8).occupyingChessPiece;
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.G8).occupyingChessPiece == null)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.F8).occupyingChessPiece == null)) {
+                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.G8), ChessMove.Type.Castle));
+                        }
+
+                    } else {
+                        ChessPiece rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.A1).occupyingChessPiece;
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.B1).occupyingChessPiece == null)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.C1).occupyingChessPiece == null)) {
+                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.B1), ChessMove.Type.Castle));
+                        }
+
+                        rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.H1).occupyingChessPiece;
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.G1).occupyingChessPiece == null)
+                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.F1).occupyingChessPiece == null)) {
+                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.G1), ChessMove.Type.Castle));
+                        }
+                    }
+                }
+
+
                 return possibleMoves;
             }
         },
-        Pawn{
+        Pawn {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
+                int yDirection = space.occupyingChessPiece.color == Color.White ? 1 : -1;
 
-                if (space.occupyingChessPiece.color == Color.White) {
+                addPawnMoves(chessGame, space, possibleMoves, yDirection);
 
-                    ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, 1);
-                    if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
-                        possibleMoves.add(new ChessMove(space, leftSpace));
+                if (space.occupyingChessPiece.isFirstMove()) {
+                    ChessBoard.Space space1 = space.getRelativeNeighbor(0, yDirection);
+                    if (space1.occupyingChessPiece == null) {
+                        ChessBoard.Space space2 = space.getRelativeNeighbor(0, yDirection * 2);
+                        if (space2.occupyingChessPiece == null) {
+                            possibleMoves.add(new ChessMove(space, space2));
+                        }
+                    }
+                }
 
-                    ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, 1);
-                    if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
-                        possibleMoves.add(new ChessMove(space, rightSpace));
+                // en passant
 
-                    ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, 1);
-                    if (frontSpace != null && frontSpace.occupyingChessPiece == null)
-                        possibleMoves.add(new ChessMove(space, frontSpace));
-                }else{
+                ChessMove previousMove = chessGame.chessMoves.size()==0 ? null : chessGame.chessMoves.peek() ;
+                if (previousMove != null && previousMove.fromChessPieceType == Type.Pawn
+                        && previousMove.from.coordinate.getXYCoordinates().y == yDirection
+                        && previousMove.to.coordinate.getXYCoordinates().y == yDirection + 2
+                ) {
+                    int opponentColumn = previousMove.from.coordinate.getXYCoordinates().x;
+                    int myColumn = space.coordinate.getXYCoordinates().x;
 
-                    ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, -1);
-                    if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
-                        possibleMoves.add(new ChessMove(space, leftSpace));
-
-                    ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, -1);
-                    if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
-                        possibleMoves.add(new ChessMove(space, rightSpace));
-
-                    ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, -1);
-                    if (frontSpace != null && frontSpace.occupyingChessPiece == null)
-                        possibleMoves.add(new ChessMove(space, frontSpace));
+                    if (((opponentColumn - myColumn) == 1) || ((opponentColumn - myColumn) == -1)) {
+                        ChessBoard.Space moveToSpace = previousMove.to.getRelativeNeighbor(0, yDirection);
+                        possibleMoves.add(new ChessMove(space, moveToSpace, ChessMove.Type.EnPassant));
+                    }
 
                 }
 
+
                 return possibleMoves;
+            }
+
+            private void addPawnMoves(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, int yDirection) {
+                ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, yDirection);
+                if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                    possibleMoves.add(new ChessMove(space, leftSpace));
+
+                ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, yDirection);
+                if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                    possibleMoves.add(new ChessMove(space, rightSpace));
+
+                ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, yDirection);
+                if (frontSpace != null && frontSpace.occupyingChessPiece == null)
+                    possibleMoves.add(new ChessMove(space, frontSpace));
             }
         };
 
         private static void addPossibleRelativeMove(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, int x, int y) {
             ChessBoard.Space relativeNeighbor = space.getRelativeNeighbor(x, y);
             if (relativeNeighbor == null) return;
-            if (relativeNeighbor.occupyingChessPiece == null){
+            if (relativeNeighbor.occupyingChessPiece == null) {
                 possibleMoves.add(new ChessMove(space, relativeNeighbor));
-            }else{
-                if (relativeNeighbor.occupyingChessPiece.color != chessGame.offensivePlayer.color){
+            } else {
+                if (relativeNeighbor.occupyingChessPiece.color != chessGame.offensivePlayer.color) {
                     possibleMoves.add(new ChessMove(space, relativeNeighbor));
                 }
             }
@@ -188,11 +254,11 @@ public enum ChessPiece {
 
             boolean done = false;
             ChessBoard.Space newSpace = space;
-            while (!done){
+            while (!done) {
                 newSpace = newSpace.getNeighbor(moveDirection);
-                if (newSpace == null){
+                if (newSpace == null) {
                     done = true;
-                }else {
+                } else {
                     if (newSpace.occupyingChessPiece == null) {
                         possibleMoves.add(new ChessMove(space, newSpace));
                     } else {
@@ -208,7 +274,7 @@ public enum ChessPiece {
         public abstract List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space);
     }
 
-    public enum Status{
+    public enum Status {
         Active,
         Captured
     }

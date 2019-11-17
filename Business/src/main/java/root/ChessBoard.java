@@ -89,6 +89,8 @@ public class ChessBoard {
             occupyingChessPiece = chessPiece;
             chessPiece.space = this;
             chessPiece.status= ChessPiece.Status.Active;
+            chessPiece.actAsType = chessPiece.type;
+            chessPiece.numberOfMoves = 0;
         }
 
         public void clear() {
@@ -107,6 +109,10 @@ public class ChessBoard {
             Point xyCoordinates = getXYCoordinates();
             ECoordinate newCoordinate = ECoordinate.get(xyCoordinates.x + x, xyCoordinates.y + y);
             return spaces.at(newCoordinate);
+        }
+
+        public boolean contains(ChessPiece.Type type) {
+            return occupyingChessPiece==null ? false : occupyingChessPiece.actAsType == type;
         }
     }
 

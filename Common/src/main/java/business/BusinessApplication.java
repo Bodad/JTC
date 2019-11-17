@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class BusinessApplication implements IHealthCheck, INamedEntity {
+    Logger logger = new Logger();
+
     List<BusinessManager> businessManagers = new ArrayList<>();
     protected final String name;
 
@@ -26,6 +28,7 @@ public abstract class BusinessApplication implements IHealthCheck, INamedEntity 
 
     @Override
     public HealthCheck getHealthCheck() {
+        logger.info("Test {}", "A");
         HealthCheck healthCheck = new HealthCheck(this);
         healthCheck.children.addAll(businessManagers.stream().map(BusinessManager::getHealthCheck).collect(Collectors.toList()));
         return healthCheck;
