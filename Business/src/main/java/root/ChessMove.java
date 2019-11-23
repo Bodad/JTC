@@ -1,7 +1,9 @@
 package root;
 
-import java.awt.*;
 import java.util.Objects;
+
+import static root.ChessBoard.Space.*;
+import static root.ChessPiece.*;
 
 public class ChessMove {
     public final ChessPiece fromChessPiece;
@@ -29,11 +31,11 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        if (toChessPiece  != null){
+        if (toChessPiece != null) {
             return String.format("%s %s from %s to %s capturing %s %s %s",
-                    fromChessPiece.color, fromChessPieceType, from.coordinate, to.coordinate, toChessPiece.color, toChessPieceType, type==Type.Normal ? "" : type);
-        }else{
-            return String.format("%s %s from %s to %s %s", fromChessPiece.color, fromChessPieceType, from.coordinate, to.coordinate, type==Type.Normal ? "" : type);
+                    fromChessPiece.color, fromChessPieceType, from, to, toChessPiece.color, toChessPieceType, type == Type.Normal ? "" : type);
+        } else {
+            return String.format("%s %s from %s to %s %s", fromChessPiece.color, fromChessPieceType, from, to, type == Type.Normal ? "" : type);
         }
     }
 
@@ -55,8 +57,8 @@ public class ChessMove {
         return this.type.executeMove(this, chessGame);
     }
 
-    public static enum Type{
-        Normal{
+    public static enum Type {
+        Normal {
             @Override
             public boolean executeMove(ChessMove chessMove, ChessGame chessGame) {
                 ChessPiece capturedChessPiece = captureChessPiece(chessGame, chessMove.to);
@@ -66,8 +68,8 @@ public class ChessMove {
                 // Promote Pawn if appropriate
                 if ((chessMove.fromChessPiece.actAsType == ChessPiece.Type.Pawn)
                         && (
-                        (chessMove.to.coordinate.getXYCoordinates().y == 0 && chessMove.fromChessPiece.color == ChessPiece.Color.Black)  ||
-                                (chessMove.to.coordinate.getXYCoordinates().y == 7 && chessMove.fromChessPiece.color == ChessPiece.Color.White)
+                        (chessMove.to.y == 0 && chessMove.fromChessPiece.color == ChessPiece.Color.Black) ||
+                                (chessMove.to.y == 7 && chessMove.fromChessPiece.color == ChessPiece.Color.White)
                 )
                 ) {
                     chessMove.fromChessPiece.actAsType = ChessPiece.Type.Queen;
@@ -76,7 +78,7 @@ public class ChessMove {
                 return capturedChessPiece == null ? false : (capturedChessPiece.type == ChessPiece.Type.King);
             }
         },
-        EnPassant{
+        EnPassant {
             @Override
             public boolean executeMove(ChessMove chessMove, ChessGame chessGame) {
                 int yDirection = chessGame.offensivePlayer.color == ChessPiece.Color.Black ? -1 : 1;
@@ -88,21 +90,33 @@ public class ChessMove {
                 return false;
             }
         },
-        Castle{
+        Castle {
             @Override
             public boolean executeMove(ChessMove chessMove, ChessGame chessGame) {
                 // the "To" space is the final home of the king
                 chessMove.fromChessPiece.move(chessMove.from, chessMove.to);
-                ChessBoard.Space rookFromSpace = chessMove.to.getRelativeNeighbor(chessMove.to.getXYCoordinates().x == 1 ? -1 : 1, 0);
-                ChessBoard.Space rookToSpace = chessMove.to.getRelativeNeighbor(chessMove.to.getXYCoordinates().x == 1 ? 1 : -1, 0);
-                rookFromSpace.occupyingChessPiece.move(rookFromSpace, rookToSpace);
+
+                switch (chessMove.to) {
+                    case C8:
+                        BlackRook1.move(A8, D8);
+                        break;
+                    case G8:
+                        BlackRook2.move(H8, F8);
+                        break;
+                    case C1:
+                        WhiteRook1.move(A1, D1);
+                        break;
+                    case G1:
+                        WhiteRook2.move(H1, F1);
+                        break;
+                }
                 return false;
             }
         };
 
         public abstract boolean executeMove(ChessMove chessMove, ChessGame chessGame);
 
-        public ChessPiece captureChessPiece(ChessGame chessGame, ChessBoard.Space toSpace){
+        public ChessPiece captureChessPiece(ChessGame chessGame, ChessBoard.Space toSpace) {
             ChessPiece capturedChessPiece = toSpace.occupyingChessPiece;
 
             if (capturedChessPiece != null) {
@@ -117,72 +131,22 @@ public class ChessMove {
 
 
     public enum Direction {
-        Left {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.x == 0) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x-1, xyCoordinates.y));
-            }
-        },
-        Right {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.x ==7) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x+1, xyCoordinates.y));
-            }
-        },
-        Up {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.y ==7) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x, xyCoordinates.y+1));
-            }
-        },
-        Down {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.y ==0) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x, xyCoordinates.y-1));
-            }
-        },
-        UpRight {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.x == 7 || xyCoordinates.y == 7) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x+1, xyCoordinates.y+1));
-            }
-        },
-        UpLeft {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.x == 0 || xyCoordinates.y == 7) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x-1, xyCoordinates.y+1));
-            }
-        },
-        DownRight {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.x == 7 || xyCoordinates.y == 0) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x+1, xyCoordinates.y-1));
-            }
-        },
-        DownLeft {
-            @Override
-            public ChessBoard.Space getSpace(ChessBoard.Space space) {
-                Point xyCoordinates = space.getXYCoordinates();
-                if (xyCoordinates.x == 0 || xyCoordinates.y == 0) return null;
-                return ChessBoard.spaces.at(ChessBoard.ECoordinate.get(xyCoordinates.x-1, xyCoordinates.y-1));
-            }
-        };
+        Left(-1, 0),
+        Right(1, 0),
+        Up(0, 1),
+        Down(0, -1),
+        UpRight(1, 1),
+        UpLeft(-1, 1),
+        DownRight(1, -1),
+        DownLeft(-1, -1);
 
-        public abstract ChessBoard.Space getSpace(ChessBoard.Space space);
+        public final int xOffset;
+        public final int yOffset;
+
+        Direction(int xOffset, int yOffset) {
+            this.xOffset = xOffset;
+            this.yOffset = yOffset;
+        }
 
     }
 }

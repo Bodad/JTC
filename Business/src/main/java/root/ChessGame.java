@@ -11,6 +11,7 @@ public class ChessGame {
     Logger logger = new Logger();
 
     ChessBoard chessBoard = new ChessBoard();
+
     Player blackPlayer = new Player("Black Player", ChessPiece.Color.Black, this, new TomChessPlayLogic());
     Player whitePlayer = new Player("White Player", ChessPiece.Color.White, this, new JakeChessPlayLogic());
 
@@ -29,11 +30,6 @@ public class ChessGame {
         winner = null;
 
         if (offensivePlayer != whitePlayer) switchPlayers();
-
-        ChessBoard.ECoordinate eCoordinate = ChessBoard.ECoordinate.get(0, 0);
-        ChessBoard.Space A1 = chessBoard.spaces.at(eCoordinate);
-        ChessBoard.Space B1 = chessBoard.spaces.at(ChessBoard.ECoordinate.get(1, 0));
-        ChessBoard.Space A2 = chessBoard.spaces.at(ChessBoard.ECoordinate.get(0, 1));
 
         HashMap<ChessPiece.Color, List<ChessMove>> illegalChessMoves = new HashMap<>();
         illegalChessMoves.put(ChessPiece.Color.Black, new ArrayList<>());

@@ -68,6 +68,13 @@ public enum ChessPiece {
             numberOfMoves++;
     }
 
+    public void reset(ChessBoard.Space space) {
+        this.space = space;
+        this.status = ChessPiece.Status.Active;
+        this.actAsType = this.type;
+        this.numberOfMoves = 0;
+ }
+
     public enum Color {
         Black,
         White;
@@ -78,7 +85,6 @@ public enum ChessPiece {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                Point xyCoordinates = space.getXYCoordinates();
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Right);
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Left);
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Up);
@@ -106,7 +112,6 @@ public enum ChessPiece {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                Point xyCoordinates = space.getXYCoordinates();
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpRight);
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpLeft);
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownRight);
@@ -118,7 +123,6 @@ public enum ChessPiece {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                Point xyCoordinates = space.getXYCoordinates();
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Right);
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Left);
                 addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Up);
@@ -148,33 +152,35 @@ public enum ChessPiece {
                 // consider castle
                 if (space.occupyingChessPiece.numberOfMoves == 0) {
                     if (chessGame.offensivePlayer.color == Color.Black) {
-                        ChessPiece rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.A8).occupyingChessPiece;
+                        ChessPiece rookSpaceOccupant = ChessBoard.Space.A8.occupyingChessPiece;
                         if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.B8).occupyingChessPiece == null)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.C8).occupyingChessPiece == null)) {
-                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.B8), ChessMove.Type.Castle));
+                                && (ChessBoard.Space.B8.occupyingChessPiece == null)
+                                && (ChessBoard.Space.C8.occupyingChessPiece == null)
+                                && (ChessBoard.Space.D8.occupyingChessPiece == null)) {
+                            possibleMoves.add(new ChessMove(space, ChessBoard.Space.C8, ChessMove.Type.Castle));
                         }
 
-                        rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.H8).occupyingChessPiece;
+                        rookSpaceOccupant = ChessBoard.Space.H8.occupyingChessPiece;
                         if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.G8).occupyingChessPiece == null)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.F8).occupyingChessPiece == null)) {
-                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.G8), ChessMove.Type.Castle));
+                                && (ChessBoard.Space.G8.occupyingChessPiece == null)
+                                && (ChessBoard.Space.F8.occupyingChessPiece == null)){
+                            possibleMoves.add(new ChessMove(space, ChessBoard.Space.G8, ChessMove.Type.Castle));
                         }
 
                     } else {
-                        ChessPiece rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.A1).occupyingChessPiece;
+                        ChessPiece rookSpaceOccupant = ChessBoard.Space.A1.occupyingChessPiece;
                         if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.B1).occupyingChessPiece == null)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.C1).occupyingChessPiece == null)) {
-                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.B1), ChessMove.Type.Castle));
+                                && (ChessBoard.Space.B1.occupyingChessPiece == null)
+                                && (ChessBoard.Space.C1.occupyingChessPiece == null)
+                                && (ChessBoard.Space.D1.occupyingChessPiece == null)) {
+                            possibleMoves.add(new ChessMove(space, ChessBoard.Space.C1, ChessMove.Type.Castle));
                         }
 
-                        rookSpaceOccupant = ChessBoard.spaces.at(ChessBoard.ECoordinate.H1).occupyingChessPiece;
+                        rookSpaceOccupant = ChessBoard.Space.H1.occupyingChessPiece;
                         if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.G1).occupyingChessPiece == null)
-                                && (ChessBoard.spaces.at(ChessBoard.ECoordinate.F1).occupyingChessPiece == null)) {
-                            possibleMoves.add(new ChessMove(space, ChessBoard.spaces.at(ChessBoard.ECoordinate.G1), ChessMove.Type.Castle));
+                                && (ChessBoard.Space.G1.occupyingChessPiece == null)
+                                && (ChessBoard.Space.F1.occupyingChessPiece == null)){
+                            possibleMoves.add(new ChessMove(space, ChessBoard.Space.G1, ChessMove.Type.Castle));
                         }
                     }
                 }
@@ -202,14 +208,14 @@ public enum ChessPiece {
                 }
 
                 // en passant
-
+                //TODO This is not right
                 ChessMove previousMove = chessGame.chessMoves.size()==0 ? null : chessGame.chessMoves.peek() ;
                 if (previousMove != null && previousMove.fromChessPieceType == Type.Pawn
-                        && previousMove.from.coordinate.getXYCoordinates().y == yDirection
-                        && previousMove.to.coordinate.getXYCoordinates().y == yDirection + 2
+                        && previousMove.from.y == yDirection
+                        && previousMove.to.y == yDirection + 2
                 ) {
-                    int opponentColumn = previousMove.from.coordinate.getXYCoordinates().x;
-                    int myColumn = space.coordinate.getXYCoordinates().x;
+                    int opponentColumn = previousMove.from.x;
+                    int myColumn = space.x;
 
                     if (((opponentColumn - myColumn) == 1) || ((opponentColumn - myColumn) == -1)) {
                         ChessBoard.Space moveToSpace = previousMove.to.getRelativeNeighbor(0, yDirection);
@@ -250,8 +256,6 @@ public enum ChessPiece {
         }
 
         private static void addDirectionalMoves(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, ChessMove.Direction moveDirection) {
-            Point xyCoordinates = space.getXYCoordinates();
-
             boolean done = false;
             ChessBoard.Space newSpace = space;
             while (!done) {
