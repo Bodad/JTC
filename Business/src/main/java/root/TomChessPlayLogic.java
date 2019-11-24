@@ -14,6 +14,8 @@ public class TomChessPlayLogic extends ChessPlayLogic {
         ChessPiece.Type randomChessPieceType = distinctChessPieceType.get(random.nextInt(distinctChessPieceType.size()));
         chessMoves = chessMoves.stream().filter(chessMove->chessMove.fromChessPieceType == randomChessPieceType).collect(Collectors.toList());
 
+
+
         return chessMoves.get(random.nextInt(chessMoves.size()));
     }
 }

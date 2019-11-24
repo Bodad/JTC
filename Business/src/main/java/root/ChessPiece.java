@@ -81,7 +81,7 @@ public enum ChessPiece {
     }
 
     public enum Type {
-        Rook {
+        Rook(525) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -92,7 +92,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Knight {
+        Knight(350) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -108,7 +108,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Bishop {
+        Bishop(350) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -119,7 +119,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Queen {
+        Queen(1000) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -135,7 +135,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        King {
+        King(10000) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -189,7 +189,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Pawn {
+        Pawn(100) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -273,6 +273,13 @@ public enum ChessPiece {
                     }
                 }
             }
+        }
+
+
+        public final int pointValue;
+
+        Type(int pointValue){
+            this.pointValue = pointValue;
         }
 
         public abstract List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space);
