@@ -14,6 +14,10 @@ public class ChessBoard {
         Arrays.stream(Space.values()).forEach(space->space.reset());
     }
 
+    public class ChessBoardState{
+
+    }
+
     public enum Space {
         A1(0,0, WhiteRook1),
         A2(0,1, WhitePawn1),
@@ -126,7 +130,7 @@ public class ChessBoard {
         }
 
         public boolean contains(ChessPiece.Type type) {
-            return occupyingChessPiece == null ? false : occupyingChessPiece.actAsType == type;
+            return occupyingChessPiece == null ? false : occupyingChessPiece.chessPieceStatus.actAsType == type;
         }
 
         static {

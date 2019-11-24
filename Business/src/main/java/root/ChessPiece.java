@@ -1,6 +1,5 @@
 package root;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,38 +40,36 @@ public enum ChessPiece {
 
     public final Type type;
     public final Color color;
-    public Status status;
-    public ChessBoard.Space space;
-    public int numberOfMoves;
-    public Type actAsType;
+
+    ChessPieceStatus chessPieceStatus = new ChessPieceStatus();
 
     ChessPiece(Type chessPieceType, Color chessPieceColor) {
         this.type = chessPieceType;
         this.color = chessPieceColor;
-        this.actAsType = chessPieceType;
+        this.chessPieceStatus.actAsType = chessPieceType;
     }
 
     boolean isFirstMove() {
-        return numberOfMoves == 0;
+        return chessPieceStatus.numberOfMoves == 0;
     }
 
-    List<ChessMove> getPossibleMoves(ChessGame chessGame) {
-        List<ChessMove> possibleMoves = actAsType.getPossibleMoves(chessGame, space);
+    List<ChessMove> getPossibleMoves(ChessGame.GameState gameState) {
+        List<ChessMove> possibleMoves = chessPieceStatus.actAsType.getPossibleMoves(gameState, chessPieceStatus.space);
         return possibleMoves;
     }
 
     public void move(ChessBoard.Space fromSpace, ChessBoard.Space toSpace) {
             fromSpace.occupyingChessPiece = null;
             toSpace.occupyingChessPiece = this;
-            space = toSpace;
-            numberOfMoves++;
+        chessPieceStatus.space = toSpace;
+        chessPieceStatus.numberOfMoves++;
     }
 
     public void reset(ChessBoard.Space space) {
-        this.space = space;
-        this.status = ChessPiece.Status.Active;
-        this.actAsType = this.type;
-        this.numberOfMoves = 0;
+        chessPieceStatus.space = space;
+        chessPieceStatus.status = PlayStatus.Active;
+        chessPieceStatus.actAsType = this.type;
+        chessPieceStatus.numberOfMoves = 0;
  }
 
     public enum Color {
@@ -83,77 +80,79 @@ public enum ChessPiece {
     public enum Type {
         Rook(525) {
             @Override
-            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+            public List<ChessMove> getPossibleMoves(ChessGame.GameState gameState, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Right);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Left);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Up);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Down);
+
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Right);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Left);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Up);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Down);
                 return possibleMoves;
             }
         },
         Knight(350) {
             @Override
-            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+            public List<ChessMove> getPossibleMoves(ChessGame.GameState gameState, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, 2);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 2);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, -2, 1);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, -2, -1);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, -2);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, -2);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 2, 1);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 2, -1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 1, 2);
+                addPossibleRelativeMove(gameState, space, possibleMoves, -1, 2);
+                addPossibleRelativeMove(gameState, space, possibleMoves, -2, 1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, -2, -1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 1, -2);
+                addPossibleRelativeMove(gameState, space, possibleMoves, -1, -2);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 2, 1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 2, -1);
 
                 return possibleMoves;
             }
         },
         Bishop(350) {
             @Override
-            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+            public List<ChessMove> getPossibleMoves(ChessGame.GameState gameState, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpRight);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpLeft);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownRight);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownLeft);
+
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.UpRight);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.UpLeft);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.DownRight);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.DownLeft);
                 return possibleMoves;
             }
         },
         Queen(1000) {
             @Override
-            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+            public List<ChessMove> getPossibleMoves(ChessGame.GameState gameState, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Right);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Left);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Up);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.Down);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Right);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Left);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Up);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.Down);
 
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpRight);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.UpLeft);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownRight);
-                addDirectionalMoves(chessGame, space, possibleMoves, ChessMove.Direction.DownLeft);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.UpRight);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.UpLeft);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.DownRight);
+                addDirectionalMoves(gameState, space, possibleMoves, ChessMove.Direction.DownLeft);
                 return possibleMoves;
             }
         },
         King(10000) {
             @Override
-            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+            public List<ChessMove> getPossibleMoves(ChessGame.GameState gameState, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 0, 1);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, 1);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, 0);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 1, -1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 0, 1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 1, 1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 1, 0);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 1, -1);
 
-                addPossibleRelativeMove(chessGame, space, possibleMoves, 0, -1);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, -1);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 0);
-                addPossibleRelativeMove(chessGame, space, possibleMoves, -1, 1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, 0, -1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, -1, -1);
+                addPossibleRelativeMove(gameState, space, possibleMoves, -1, 0);
+                addPossibleRelativeMove(gameState, space, possibleMoves, -1, 1);
 
                 // consider castle
-                if (space.occupyingChessPiece.numberOfMoves == 0) {
-                    if (chessGame.offensivePlayer.color == Color.Black) {
+                if (space.occupyingChessPiece.chessPieceStatus.numberOfMoves == 0) {
+                    if (gameState.offensivePlayer.color == Color.Black) {
                         ChessPiece rookSpaceOccupant = ChessBoard.Space.A8.occupyingChessPiece;
-                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.chessPieceStatus.numberOfMoves == 0)
                                 && (ChessBoard.Space.B8.occupyingChessPiece == null)
                                 && (ChessBoard.Space.C8.occupyingChessPiece == null)
                                 && (ChessBoard.Space.D8.occupyingChessPiece == null)) {
@@ -161,7 +160,7 @@ public enum ChessPiece {
                         }
 
                         rookSpaceOccupant = ChessBoard.Space.H8.occupyingChessPiece;
-                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.chessPieceStatus.numberOfMoves == 0)
                                 && (ChessBoard.Space.G8.occupyingChessPiece == null)
                                 && (ChessBoard.Space.F8.occupyingChessPiece == null)){
                             possibleMoves.add(new ChessMove(space, ChessBoard.Space.G8, ChessMove.Type.Castle));
@@ -169,7 +168,7 @@ public enum ChessPiece {
 
                     } else {
                         ChessPiece rookSpaceOccupant = ChessBoard.Space.A1.occupyingChessPiece;
-                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.chessPieceStatus.numberOfMoves == 0)
                                 && (ChessBoard.Space.B1.occupyingChessPiece == null)
                                 && (ChessBoard.Space.C1.occupyingChessPiece == null)
                                 && (ChessBoard.Space.D1.occupyingChessPiece == null)) {
@@ -177,7 +176,7 @@ public enum ChessPiece {
                         }
 
                         rookSpaceOccupant = ChessBoard.Space.H1.occupyingChessPiece;
-                        if ((rookSpaceOccupant != null && rookSpaceOccupant.numberOfMoves == 0)
+                        if ((rookSpaceOccupant != null && rookSpaceOccupant.chessPieceStatus.numberOfMoves == 0)
                                 && (ChessBoard.Space.G1.occupyingChessPiece == null)
                                 && (ChessBoard.Space.F1.occupyingChessPiece == null)){
                             possibleMoves.add(new ChessMove(space, ChessBoard.Space.G1, ChessMove.Type.Castle));
@@ -191,11 +190,11 @@ public enum ChessPiece {
         },
         Pawn(100) {
             @Override
-            public List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space) {
+            public List<ChessMove> getPossibleMoves(ChessGame.GameState gameState, ChessBoard.Space space) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
                 int yDirection = space.occupyingChessPiece.color == Color.White ? 1 : -1;
 
-                addPawnMoves(chessGame, space, possibleMoves, yDirection);
+                addPawnMoves(gameState, space, possibleMoves, yDirection);
 
                 if (space.occupyingChessPiece.isFirstMove()) {
                     ChessBoard.Space space1 = space.getRelativeNeighbor(0, yDirection);
@@ -209,7 +208,7 @@ public enum ChessPiece {
 
                 // en passant
                 //TODO This is not right
-                ChessMove previousMove = chessGame.chessMoves.size()==0 ? null : chessGame.chessMoves.peek() ;
+                ChessMove previousMove = gameState.chessMoves.size()==0 ? null : gameState.chessMoves.peek() ;
                 if (previousMove != null && previousMove.fromChessPieceType == Type.Pawn
                         && previousMove.from.y == yDirection
                         && previousMove.to.y == yDirection + 2
@@ -228,13 +227,13 @@ public enum ChessPiece {
                 return possibleMoves;
             }
 
-            private void addPawnMoves(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, int yDirection) {
+            private void addPawnMoves(ChessGame.GameState gameState, ChessBoard.Space space, List<ChessMove> possibleMoves, int yDirection) {
                 ChessBoard.Space leftSpace = space.getRelativeNeighbor(-1, yDirection);
-                if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                if (leftSpace != null && leftSpace.occupyingChessPiece != null && leftSpace.occupyingChessPiece.color != gameState.offensivePlayer.color)
                     possibleMoves.add(new ChessMove(space, leftSpace));
 
                 ChessBoard.Space rightSpace = space.getRelativeNeighbor(1, yDirection);
-                if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color)
+                if (rightSpace != null && rightSpace.occupyingChessPiece != null && rightSpace.occupyingChessPiece.color != gameState.offensivePlayer.color)
                     possibleMoves.add(new ChessMove(space, rightSpace));
 
                 ChessBoard.Space frontSpace = space.getRelativeNeighbor(0, yDirection);
@@ -243,19 +242,19 @@ public enum ChessPiece {
             }
         };
 
-        private static void addPossibleRelativeMove(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, int x, int y) {
+        private static void addPossibleRelativeMove(ChessGame.GameState gameState, ChessBoard.Space space, List<ChessMove> possibleMoves, int x, int y) {
             ChessBoard.Space relativeNeighbor = space.getRelativeNeighbor(x, y);
             if (relativeNeighbor == null) return;
             if (relativeNeighbor.occupyingChessPiece == null) {
                 possibleMoves.add(new ChessMove(space, relativeNeighbor));
             } else {
-                if (relativeNeighbor.occupyingChessPiece.color != chessGame.offensivePlayer.color) {
+                if (relativeNeighbor.occupyingChessPiece.color != gameState.offensivePlayer.color) {
                     possibleMoves.add(new ChessMove(space, relativeNeighbor));
                 }
             }
         }
 
-        private static void addDirectionalMoves(ChessGame chessGame, ChessBoard.Space space, List<ChessMove> possibleMoves, ChessMove.Direction moveDirection) {
+        private static void addDirectionalMoves(ChessGame.GameState gameState, ChessBoard.Space space, List<ChessMove> possibleMoves, ChessMove.Direction moveDirection) {
             boolean done = false;
             ChessBoard.Space newSpace = space;
             while (!done) {
@@ -266,7 +265,7 @@ public enum ChessPiece {
                     if (newSpace.occupyingChessPiece == null) {
                         possibleMoves.add(new ChessMove(space, newSpace));
                     } else {
-                        if (newSpace.occupyingChessPiece.color != chessGame.offensivePlayer.color) {
+                        if (newSpace.occupyingChessPiece.color != gameState.offensivePlayer.color) {
                             possibleMoves.add(new ChessMove(space, newSpace));
                         }
                         done = true;
@@ -282,14 +281,20 @@ public enum ChessPiece {
             this.pointValue = pointValue;
         }
 
-        public abstract List<ChessMove> getPossibleMoves(ChessGame chessGame, ChessBoard.Space space);
+        public abstract List<ChessMove> getPossibleMoves(ChessGame.GameState gameState, ChessBoard.Space space);
     }
 
-    public enum Status {
+    public enum PlayStatus {
         Active,
         Captured
     }
 
+    public class ChessPieceStatus{
+        public PlayStatus status;
+        public ChessBoard.Space space;
+        public int numberOfMoves;
+        public Type actAsType;
+    }
 }
 
 

@@ -13,6 +13,7 @@ public class ChessMove {
     public final ChessMove.Type type;
     public ChessPiece.Type toChessPieceType;
     public ChessPiece.Type fromChessPieceType;
+    public ChessGame.GameState gameState;
 
     public ChessMove(ChessBoard.Space from, ChessBoard.Space to) {
         this(from, to, ChessMove.Type.Normal);
@@ -23,8 +24,8 @@ public class ChessMove {
         this.to = to;
         this.fromChessPiece = from.occupyingChessPiece;
         this.toChessPiece = to.occupyingChessPiece;
-        this.fromChessPieceType = from.occupyingChessPiece.actAsType;
-        this.toChessPieceType = to.occupyingChessPiece == null ? null : to.occupyingChessPiece.actAsType;
+        this.fromChessPieceType = from.occupyingChessPiece.chessPieceStatus.actAsType;
+        this.toChessPieceType = to.occupyingChessPiece == null ? null : to.occupyingChessPiece.chessPieceStatus.actAsType;
         this.type = type;
     }
 
@@ -66,13 +67,13 @@ public class ChessMove {
                 chessMove.fromChessPiece.move(chessMove.from, chessMove.to);
 
                 // Promote Pawn if appropriate
-                if ((chessMove.fromChessPiece.actAsType == ChessPiece.Type.Pawn)
+                if ((chessMove.fromChessPiece.chessPieceStatus.actAsType == ChessPiece.Type.Pawn)
                         && (
                         (chessMove.to.y == 0 && chessMove.fromChessPiece.color == ChessPiece.Color.Black) ||
                                 (chessMove.to.y == 7 && chessMove.fromChessPiece.color == ChessPiece.Color.White)
                 )
                 ) {
-                    chessMove.fromChessPiece.actAsType = ChessPiece.Type.Queen;
+                    chessMove.fromChessPiece.chessPieceStatus.actAsType = ChessPiece.Type.Queen;
                 }
 
                 return capturedChessPiece == null ? false : (capturedChessPiece.type == ChessPiece.Type.King);
@@ -81,7 +82,7 @@ public class ChessMove {
         EnPassant {
             @Override
             public boolean executeMove(ChessMove chessMove, ChessGame chessGame) {
-                int yDirection = chessGame.offensivePlayer.color == ChessPiece.Color.Black ? -1 : 1;
+                int yDirection = chessGame.gameState.offensivePlayer.color == ChessPiece.Color.Black ? -1 : 1;
                 ChessBoard.Space captureSpace = chessMove.to.getRelativeNeighbor(0, yDirection);
                 ChessPiece capturedChessPiece = captureChessPiece(chessGame, captureSpace);
 
@@ -120,9 +121,9 @@ public class ChessMove {
             ChessPiece capturedChessPiece = toSpace.occupyingChessPiece;
 
             if (capturedChessPiece != null) {
-                capturedChessPiece.status = ChessPiece.Status.Captured;
-                capturedChessPiece.space = null;
-                chessGame.defensivePlayer.removePiece(capturedChessPiece);
+                capturedChessPiece.chessPieceStatus.status = PlayStatus.Captured;
+                capturedChessPiece.chessPieceStatus.space = null;
+                chessGame.gameState.defensivePlayer.removePiece(capturedChessPiece);
             }
 
             return capturedChessPiece;

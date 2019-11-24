@@ -11,7 +11,6 @@ public class Player {
 
     public final String name;
     public final ChessPiece.Color color;
-    public final ChessGame chessGame;
     private final Random random = new Random();
 
     private final ChessPlayLogic chessPlayLogic;
@@ -19,15 +18,14 @@ public class Player {
     public List<ChessPiece> activeChessPieces;
     public List<ChessPiece> capturedChessPieces = new ArrayList<>();
 
-    public Player(String name, ChessPiece.Color color, ChessGame chessGame, ChessPlayLogic chessPlayLogic) {
+    public Player(String name, ChessPiece.Color color, ChessPlayLogic chessPlayLogic) {
         this.name = name;
         this.color = color;
-        this.chessGame = chessGame;
         this.chessPlayLogic = chessPlayLogic;
     }
 
-    public ChessMove choosePreferredMove(List<ChessMove> illegalChessMoves) {
-        List<ChessMove> chessMoves = getAllPossibleMoves();
+    public ChessMove choosePreferredMove(ChessGame.GameState gameState, List<ChessMove> illegalChessMoves) {
+        List<ChessMove> chessMoves = getAllPossibleMoves(gameState);
 
         logger.info("Player {} has {} moves minus {} illegals", this, chessMoves.size(), illegalChessMoves.size());
 
@@ -44,9 +42,9 @@ public class Player {
         return finalMove;
     }
 
-    private List<ChessMove> getAllPossibleMoves() {
+    private List<ChessMove> getAllPossibleMoves(ChessGame.GameState gameState) {
         List<ChessMove> possibleMoves = activeChessPieces.stream()
-                .flatMap(chessPiece->chessPiece.getPossibleMoves(chessGame).stream())
+                .flatMap(chessPiece->chessPiece.getPossibleMoves(gameState).stream())
                 .collect(Collectors.toList());
 
         return possibleMoves;

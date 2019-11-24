@@ -27,11 +27,11 @@ public class ChessManager extends BusinessManager {
 //            }
         }
 
-        OptionalDouble average = chessGames.stream().mapToInt(chessGame -> chessGame.chessMoves.size()).filter(i -> i < 499).average();
+        OptionalDouble average = chessGames.stream().mapToInt(chessGame -> chessGame.gameState.chessMoves.size()).filter(i -> i < 499).average();
 
         Map<ChessPiece.Color, Long> winners = chessGames.stream()
-                .filter(chessGame->chessGame.winner != null)
-                .collect(Collectors.groupingBy(chessGame -> chessGame.winner.color, Collectors.counting()));
+                .filter(chessGame->chessGame.gameState.winner != null)
+                .collect(Collectors.groupingBy(chessGame -> chessGame.gameState.winner.color, Collectors.counting()));
 
 
         getHealthCheck();
