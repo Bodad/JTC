@@ -27,22 +27,29 @@ public class JakeChessPlayLogic extends ChessPlayLogic {
             String[] spaces = nextLine.split(" ");
 
             if (spaces.length == 2) {
-                ChessSpace from = ChessSpace.valueOf(spaces[0]);
-                ChessSpace to = ChessSpace.valueOf(spaces[1]);
+                try {
+                    ChessSpace from = ChessSpace.valueOf(spaces[0]);
+                    ChessSpace to = ChessSpace.valueOf(spaces[1]);
 
-                theMove = chessMoves.stream().filter(chessMove -> chessMove.from == from && chessMove.to == to).findFirst();
+                    theMove = chessMoves.stream().filter(chessMove -> chessMove.from == from && chessMove.to == to).findFirst();
+                }catch(Exception e){}
             }
 
             if (spaces.length == 3) {
-                ChessSpace from = ChessSpace.valueOf(spaces[0]);
-                ChessSpace to = ChessSpace.valueOf(spaces[1]);
-                ChessMove.Type type = ChessMove.Type.valueOf(spaces[2]);
+                try {
+                    ChessSpace from = ChessSpace.valueOf(spaces[0]);
+                    ChessSpace to = ChessSpace.valueOf(spaces[1]);
+                    ChessMove.Type type = ChessMove.Type.valueOf(spaces[2]);
 
-                theMove = chessMoves.stream().filter(chessMove -> chessMove.from == from && chessMove.to == to && chessMove.type == type).findFirst();
-                if (theMove.isPresent() == false){
-                    System.out.println("Invalid... try again");
-                }
+                    theMove = chessMoves.stream().filter(chessMove -> chessMove.from == from && chessMove.to == to && chessMove.type == type).findFirst();
+                }catch(Exception e){}
             }
+
+            if (theMove.isPresent() == false){
+                System.out.println("Invalid... try again");
+                chessMoves.stream().forEach(System.out::println);
+            }
+
         }
 
         return theMove.get();

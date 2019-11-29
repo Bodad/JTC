@@ -73,7 +73,7 @@ public enum ChessPiece {
     }
 
     public enum Type {
-        Rook(525, 0, 0, 0, 0, 0, 0, 0, 0,
+        Rook(500, 0, 0, 0, 0, 0, 0, 0, 0,
                 5, 10, 10, 10, 10, 10, 10, 5,
                 -5, 0, 0, 0, 0, 0, 0, -5,
                 -5, 0, 0, 0, 0, 0, 0, -5,
@@ -92,7 +92,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Knight(350, -50, -40, -30, -30, -30, -30, -40, -50,
+        Knight(320, -50, -40, -30, -30, -30, -30, -40, -50,
                 -40, -20, 0, 0, 0, 0, -20, -40,
                 -30, 0, 10, 15, 15, 10, 0, -30,
                 -30, 5, 15, 20, 20, 15, 5, -30,
@@ -115,7 +115,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Bishop(350, -20, -10, -10, -10, -10, -10, -10, -20,
+        Bishop(330, -20, -10, -10, -10, -10, -10, -10, -20,
                 -10, 0, 0, 0, 0, 0, 0, -10,
                 -10, 0, 5, 10, 10, 5, 0, -10,
                 -10, 5, 5, 10, 10, 5, 5, -10,
@@ -134,7 +134,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        Queen(1000, -20, -10, -10, -5, -5, -10, -10, -20,
+        Queen(900, -20, -10, -10, -5, -5, -10, -10, -20,
                 -10, 0, 0, 0, 0, 0, 0, -10,
                 -10, 0, 5, 5, 5, 5, 0, -10,
                 -5, 0, 5, 5, 5, 5, 0, -5,
@@ -157,7 +157,7 @@ public enum ChessPiece {
                 return possibleMoves;
             }
         },
-        King(10000) {
+        King(20000) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessBoard chessBoard, ChessSpace startingSpace) {
                 List<ChessMove> possibleMoves = new ArrayList<>();
@@ -348,8 +348,8 @@ public enum ChessPiece {
                         value = intOffsets[i * 8 + j];
                     }
 
-                    whiteStrengthArray[j][7 - i] = value;
-                    blackStrengthArray[j][i] = value;
+                    whiteStrengthArray[7-i][j] = value;
+                    blackStrengthArray[i][j] = value;
                 }
             }
         }

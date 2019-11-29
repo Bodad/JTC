@@ -19,8 +19,8 @@ public class ChessBoard {
     Player defensivePlayer;
 
     public ChessBoard(ChessBoard chessBoard) {
-        this.offensivePlayer = chessBoard.offensivePlayer;
-        this.defensivePlayer = chessBoard.defensivePlayer;
+        this.offensivePlayer = chessBoard.defensivePlayer;
+        this.defensivePlayer = chessBoard.offensivePlayer;
 
         this.spaceStatusMap = (HashMap<ChessSpace, SpaceStatus>) chessBoard.spaceStatusMap.clone();
         this.chessPieceStatusMap = (HashMap<ChessPiece, ChessPieceStatus>) chessBoard.chessPieceStatusMap.clone();
@@ -115,12 +115,18 @@ public class ChessBoard {
     }
 
     public int evaluteStrength() {
-        int strength = chessPieceStatusMap.values().stream()
+        int myStrength = chessPieceStatusMap.values().stream()
+                .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == defensivePlayer.color)
+                .mapToInt(chessPieceStatus -> chessPieceStatus.evaluteStrength())
+                .reduce(0, Integer::sum);
+
+        int opponentStrength = chessPieceStatusMap.values().stream()
                 .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == offensivePlayer.color)
                 .mapToInt(chessPieceStatus -> chessPieceStatus.evaluteStrength())
                 .reduce(0, Integer::sum);
 
-        return strength;
+
+        return myStrength - opponentStrength;
     }
 
 //    static {

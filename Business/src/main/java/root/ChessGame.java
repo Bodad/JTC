@@ -31,7 +31,7 @@ public class ChessGame {
                 chessBoard = chessMove.execute(chessBoard);
                 chessPlays.add(new ChessPlay(chessBoard, chessMove));
 
-            chessBoard.switchPlayers();
+            //chessBoard.switchPlayers();
         }
 
         winner = chessBoard.winner;

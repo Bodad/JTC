@@ -19,7 +19,7 @@ java.util.logging.Logger logger = java.util.logging.Logger.getLogger("chess");
 //    }
 
     public void info(String message, Object... objects){
-//        String message1 = MessageFormatter.arrayFormat(message, objects).getMessage();
-//        logger.info(message1);
+        String message1 = MessageFormatter.arrayFormat(message, objects).getMessage();
+ //       logger.info(message1);
     }
 }
