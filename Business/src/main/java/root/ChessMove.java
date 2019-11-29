@@ -2,39 +2,37 @@ package root;
 
 import java.util.Objects;
 
-import static root.ChessBoard.Space.*;
-import static root.ChessPiece.*;
+import static root.ChessSpace.*;
 
 public class ChessMove {
-    public final ChessPiece fromChessPiece;
-    public final ChessBoard.Space from;
-    public final ChessBoard.Space to;
-    public final ChessPiece toChessPiece;
+    public final ChessSpace from;
+    public final ChessSpace to;
     public final ChessMove.Type type;
-    public ChessPiece.Type toChessPieceType;
-    public ChessPiece.Type fromChessPieceType;
-    public ChessGame.GameState gameState;
+    public final ChessPiece capturedChessPiece;
+    public final ChessPiece.Type capturedChessPieceType;
+    public final ChessPiece fromChessPiece;
+    public final ChessPiece.Type fromChessPieceType;
 
-    public ChessMove(ChessBoard.Space from, ChessBoard.Space to) {
-        this(from, to, ChessMove.Type.Normal);
+    public ChessMove(ChessBoard chessBoard, ChessSpace from, ChessSpace to) {
+        this(chessBoard, from, to, ChessMove.Type.Normal);
     }
 
-    public ChessMove(ChessBoard.Space from, ChessBoard.Space to, ChessMove.Type type) {
+    public ChessMove(ChessBoard chessBoard, ChessSpace from, ChessSpace to, ChessMove.Type type) {
         this.from = from;
         this.to = to;
-        this.fromChessPiece = from.occupyingChessPiece;
-        this.toChessPiece = to.occupyingChessPiece;
-        this.fromChessPieceType = from.occupyingChessPiece.chessPieceStatus.actAsType;
-        this.toChessPieceType = to.occupyingChessPiece == null ? null : to.occupyingChessPiece.chessPieceStatus.actAsType;
         this.type = type;
+        this.capturedChessPiece = to.getOccupyingPiece(chessBoard);
+        this.capturedChessPieceType = capturedChessPiece == null ? null : capturedChessPiece.getStatus(chessBoard).actAsType;
+        this.fromChessPiece = from.getOccupyingPiece(chessBoard);
+        this.fromChessPieceType = fromChessPiece.getStatus(chessBoard).actAsType;
     }
 
 
     @Override
     public String toString() {
-        if (toChessPiece != null) {
+        if (capturedChessPiece != null) {
             return String.format("%s %s from %s to %s capturing %s %s %s",
-                    fromChessPiece.color, fromChessPieceType, from, to, toChessPiece.color, toChessPieceType, type == Type.Normal ? "" : type);
+                    fromChessPiece.color, fromChessPieceType, from, to, capturedChessPiece.color, capturedChessPieceType, type == Type.Normal ? "" : type);
         } else {
             return String.format("%s %s from %s to %s %s", fromChessPiece.color, fromChessPieceType, from, to, type == Type.Normal ? "" : type);
         }
@@ -54,82 +52,80 @@ public class ChessMove {
         return Objects.hash(from, to);
     }
 
-    public boolean execute(ChessGame chessGame) {
-        return this.type.executeMove(this, chessGame);
+    public ChessBoard execute(ChessBoard chessBoard) {
+        return this.type.executeMove(this, chessBoard);
     }
 
     public static enum Type {
         Normal {
             @Override
-            public boolean executeMove(ChessMove chessMove, ChessGame chessGame) {
-                ChessPiece capturedChessPiece = captureChessPiece(chessGame, chessMove.to);
-
-                chessMove.fromChessPiece.move(chessMove.from, chessMove.to);
+            public ChessBoard executeMove(ChessMove chessMove, ChessBoard chessBoard) {
+                ChessBoard newChessBoard = new ChessBoard(chessBoard);
+                ChessPiece movingChessPiece = chessMove.fromChessPiece;
+                ChessPieceStatus movingChessPieceStatus = movingChessPiece.getStatus(chessBoard);
+                ChessPiece.Type newActAsType = movingChessPieceStatus.actAsType;
 
                 // Promote Pawn if appropriate
-                if ((chessMove.fromChessPiece.chessPieceStatus.actAsType == ChessPiece.Type.Pawn)
+                if ((movingChessPieceStatus.actAsType == ChessPiece.Type.Pawn)
                         && (
-                        (chessMove.to.y == 0 && chessMove.fromChessPiece.color == ChessPiece.Color.Black) ||
-                                (chessMove.to.y == 7 && chessMove.fromChessPiece.color == ChessPiece.Color.White)
-                )
+                            (chessMove.to.y == 0 && movingChessPiece.color == ChessPiece.Color.Black) ||
+                            (chessMove.to.y == 7 && movingChessPiece.color == ChessPiece.Color.White)
+                        )
                 ) {
-                    chessMove.fromChessPiece.chessPieceStatus.actAsType = ChessPiece.Type.Queen;
+                    newActAsType = ChessPiece.Type.Queen;
                 }
 
-                return capturedChessPiece == null ? false : (capturedChessPiece.type == ChessPiece.Type.King);
+                ChessPiece capturedChessPiece = newChessBoard.executeMove(chessMove.from, chessMove.to, newActAsType);
+
+                if (ChessPiece.Type.King.matches(capturedChessPiece) ){
+                    newChessBoard.winner = newChessBoard.offensivePlayer;
+                }
+
+                return newChessBoard;
             }
         },
         EnPassant {
             @Override
-            public boolean executeMove(ChessMove chessMove, ChessGame chessGame) {
-                int yDirection = chessGame.gameState.offensivePlayer.color == ChessPiece.Color.Black ? -1 : 1;
-                ChessBoard.Space captureSpace = chessMove.to.getRelativeNeighbor(0, yDirection);
-                ChessPiece capturedChessPiece = captureChessPiece(chessGame, captureSpace);
+            public ChessBoard executeMove(ChessMove chessMove, ChessBoard chessBoard) {
+                ChessBoard newChessBoard = new ChessBoard(chessBoard);
 
-                chessMove.fromChessPiece.move(chessMove.from, chessMove.to);
+                int yDirection = chessBoard.offensivePlayer.color == ChessPiece.Color.Black ? -1 : 1;
+                ChessSpace captureSpace = chessMove.to.getRelativeNeighbor(0, yDirection);
+                ChessPiece capturedChessPiece = newChessBoard.captureChessPieceFromSpace(captureSpace);
 
-                return false;
+                newChessBoard.executeMove(chessMove.from, chessMove.to);
+
+                return newChessBoard;
             }
         },
         Castle {
             @Override
-            public boolean executeMove(ChessMove chessMove, ChessGame chessGame) {
-                // the "To" space is the final home of the king
-                chessMove.fromChessPiece.move(chessMove.from, chessMove.to);
+            public ChessBoard executeMove(ChessMove chessMove, ChessBoard chessBoard) {
+                ChessBoard newChessBoard = new ChessBoard(chessBoard);
+
+                newChessBoard.executeMove(chessMove.from, chessMove.to);
 
                 switch (chessMove.to) {
                     case C8:
-                        BlackRook1.move(A8, D8);
+                        newChessBoard.executeMove(A8, D8);
                         break;
                     case G8:
-                        BlackRook2.move(H8, F8);
+                        newChessBoard.executeMove(H8, F8);
                         break;
                     case C1:
-                        WhiteRook1.move(A1, D1);
+                        newChessBoard.executeMove(A1, D1);
                         break;
                     case G1:
-                        WhiteRook2.move(H1, F1);
+                        newChessBoard.executeMove(H1, F1);
                         break;
                 }
-                return false;
+                return newChessBoard;
             }
         };
 
-        public abstract boolean executeMove(ChessMove chessMove, ChessGame chessGame);
+        public abstract ChessBoard executeMove(ChessMove chessMove, ChessBoard chessBoard);
 
-        public ChessPiece captureChessPiece(ChessGame chessGame, ChessBoard.Space toSpace) {
-            ChessPiece capturedChessPiece = toSpace.occupyingChessPiece;
-
-            if (capturedChessPiece != null) {
-                capturedChessPiece.chessPieceStatus.status = PlayStatus.Captured;
-                capturedChessPiece.chessPieceStatus.space = null;
-                chessGame.gameState.defensivePlayer.removePiece(capturedChessPiece);
-            }
-
-            return capturedChessPiece;
-        }
     }
-
 
     public enum Direction {
         Left(-1, 0),

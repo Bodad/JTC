@@ -60,7 +60,7 @@ public enum PieceSquare {
         this.pieceSquareValues = pieceSquareValues;
     }
 
-    public int getSpaceOffset(ChessBoard.Space space){
+    public int getSpaceOffset(ChessSpace space){
         return pieceSquareValues[(7-space.y)*8 + space.x];
     }
 

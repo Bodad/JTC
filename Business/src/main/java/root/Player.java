@@ -24,29 +24,22 @@ public class Player {
         this.chessPlayLogic = chessPlayLogic;
     }
 
-    public ChessMove choosePreferredMove(ChessGame.GameState gameState, List<ChessMove> illegalChessMoves) {
-        List<ChessMove> chessMoves = getAllPossibleMoves(gameState);
+    public ChessMove choosePreferredMove(ChessBoard chessBoard) {
+        List<ChessMove> chessMoves = getAllPossibleMoves(chessBoard);
 
-        logger.info("Player {} has {} moves minus {} illegals", this, chessMoves.size(), illegalChessMoves.size());
-
-        chessMoves = chessMoves.stream()
-                .filter(chessMove-> !illegalChessMoves.contains(chessMove))
-                .collect(Collectors.toList());
+        logger.info("Player {} has {} moves", this, chessMoves.size());
 
         if (chessMoves.size() == 0) return null;
 
-        Optional<ChessMove> kingCaptureMove = chessMoves.stream().filter(chessMove -> chessMove.to.contains(ChessPiece.Type.King)).findFirst();
+        Optional<ChessMove> kingCaptureMove = chessMoves.stream().filter(chessMove -> chessMove.capturedChessPieceType == ChessPiece.Type.King).findFirst();
         if (kingCaptureMove.isPresent()) return kingCaptureMove.get();
 
-        ChessMove finalMove = chessPlayLogic.choosePreferredMove(chessMoves);
+        ChessMove finalMove = chessPlayLogic.choosePreferredMove(chessBoard);
         return finalMove;
     }
 
-    private List<ChessMove> getAllPossibleMoves(ChessGame.GameState gameState) {
-        List<ChessMove> possibleMoves = activeChessPieces.stream()
-                .flatMap(chessPiece->chessPiece.getPossibleMoves(gameState).stream())
-                .collect(Collectors.toList());
-
+    private List<ChessMove> getAllPossibleMoves(ChessBoard chessBoard) {
+        List<ChessMove> possibleMoves = chessBoard.getAllPossibleMoves();
         return possibleMoves;
     }
 
