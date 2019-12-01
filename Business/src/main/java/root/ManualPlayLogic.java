@@ -6,21 +6,17 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-public class JakeChessPlayLogic extends ChessPlayLogic {
+public class ManualPlayLogic extends ChessPlayLogic {
     Random random = new Random();
 
     @Override
     public ChessMove choosePreferredMove(ChessBoard chessBoard) {
         List<ChessMove> chessMoves = chessBoard.getAllPossibleMoves();
-//        List<ChessPiece> distinctChessPiece = chessMoves.stream().map(chessMove -> chessMove.fromChessPiece).distinct().collect(Collectors.toList());
-//
-//        ChessPiece randomChessPiece = distinctChessPiece.get(random.nextInt(distinctChessPiece.size()));
-//        chessMoves = chessMoves.stream().filter(chessMove->chessMove.fromChessPiece == randomChessPiece).collect(Collectors.toList());
 
         Optional<ChessMove> theMove = Optional.empty();
 
         while (theMove.isPresent() == false) {
-            System.out.println("Enter your move, Jake ");
+            System.out.println("Enter your move: ");
             Scanner scanner = new Scanner(System.in);
             String nextLine = scanner.nextLine();
 

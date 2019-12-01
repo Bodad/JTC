@@ -12,6 +12,8 @@ public class ChessMove {
     public final ChessPiece.Type capturedChessPieceType;
     public final ChessPiece fromChessPiece;
     public final ChessPiece.Type fromChessPieceType;
+    public int finalBoardStrength;
+    public int strength;
 
     public ChessMove(ChessBoard chessBoard, ChessSpace from, ChessSpace to) {
         this(chessBoard, from, to, ChessMove.Type.Normal);
@@ -31,10 +33,10 @@ public class ChessMove {
     @Override
     public String toString() {
         if (capturedChessPiece != null) {
-            return String.format("%s %s from %s to %s capturing %s %s %s",
-                    fromChessPiece.color, fromChessPieceType, from, to, capturedChessPiece.color, capturedChessPieceType, type == Type.Normal ? "" : type);
+            return String.format("%s %s from %s to %s capturing %s %s %s (Strength: %d)",
+                    fromChessPiece.color, fromChessPieceType, from, to, capturedChessPiece.color, capturedChessPieceType, type == Type.Normal ? "" : type, finalBoardStrength);
         } else {
-            return String.format("%s %s from %s to %s %s", fromChessPiece.color, fromChessPieceType, from, to, type == Type.Normal ? "" : type);
+            return String.format("%s %s from %s to %s %s (Strength: %d)", fromChessPiece.color, fromChessPieceType, from, to, type == Type.Normal ? "" : type, finalBoardStrength);
         }
     }
 
@@ -53,16 +55,21 @@ public class ChessMove {
     }
 
     public ChessBoard execute(ChessBoard chessBoard) {
-        return this.type.executeMove(this, chessBoard);
+        chessBoard.executedMove = this;
+        ChessBoard newChessBoard = new ChessBoard(chessBoard);
+        type.executeMove(this, newChessBoard);
+        newChessBoard.evaluateStrength();
+        strength = newChessBoard.overallStrength - chessBoard.overallStrength;
+        finalBoardStrength = newChessBoard.overallStrength;
+        return newChessBoard;
     }
 
     public static enum Type {
         Normal {
             @Override
-            public ChessBoard executeMove(ChessMove chessMove, ChessBoard chessBoard) {
-                ChessBoard newChessBoard = new ChessBoard(chessBoard);
+            public ChessBoard executeMove(ChessMove chessMove, ChessBoard newChessBoard) {
                 ChessPiece movingChessPiece = chessMove.fromChessPiece;
-                ChessPieceStatus movingChessPieceStatus = movingChessPiece.getStatus(chessBoard);
+                ChessPieceStatus movingChessPieceStatus = movingChessPiece.getStatus(newChessBoard);
                 ChessPiece.Type newActAsType = movingChessPieceStatus.actAsType;
 
                 // Promote Pawn if appropriate
@@ -86,10 +93,8 @@ public class ChessMove {
         },
         EnPassant {
             @Override
-            public ChessBoard executeMove(ChessMove chessMove, ChessBoard chessBoard) {
-                ChessBoard newChessBoard = new ChessBoard(chessBoard);
-
-                int yDirection = chessBoard.offensivePlayer.color == ChessPiece.Color.Black ? -1 : 1;
+            public ChessBoard executeMove(ChessMove chessMove, ChessBoard newChessBoard) {
+                int yDirection = newChessBoard.defensivePlayer.color == ChessPiece.Color.Black ? -1 : 1;
                 ChessSpace captureSpace = chessMove.to.getRelativeNeighbor(0, yDirection);
                 ChessPiece capturedChessPiece = newChessBoard.captureChessPieceFromSpace(captureSpace);
 
@@ -100,9 +105,7 @@ public class ChessMove {
         },
         Castle {
             @Override
-            public ChessBoard executeMove(ChessMove chessMove, ChessBoard chessBoard) {
-                ChessBoard newChessBoard = new ChessBoard(chessBoard);
-
+            public ChessBoard executeMove(ChessMove chessMove, ChessBoard newChessBoard) {
                 newChessBoard.executeMove(chessMove.from, chessMove.to);
 
                 switch (chessMove.to) {

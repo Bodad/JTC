@@ -160,6 +160,9 @@ public enum ChessPiece {
         King(20000) {
             @Override
             public List<ChessMove> getPossibleMoves(ChessBoard chessBoard, ChessSpace startingSpace) {
+
+                SpaceStatus startingSpaceStatus = chessBoard.getSpaceStatus(startingSpace);
+
                 List<ChessMove> possibleMoves = new ArrayList<>();
                 addPossibleRelativeMove(chessBoard, startingSpace, possibleMoves, 0, 1);
                 addPossibleRelativeMove(chessBoard, startingSpace, possibleMoves, 1, 1);
@@ -173,40 +176,60 @@ public enum ChessPiece {
 
                 // consider castle
 
-                if (startingSpace.getOccupyingPiece(chessBoard).getStatus(chessBoard).numberOfMoves == 0) {
+                if (
+                        (startingSpaceStatus.occupyingChessPiece.color == chessBoard.offensivePlayer.color)
+                        && (startingSpace.getOccupyingPiece(chessBoard).getStatus(chessBoard).numberOfMoves == 0)
+                ) {
 
-                    if (chessBoard.offensivePlayer.color == Color.Black) {
+                    if (startingSpaceStatus.occupyingChessPiece.color ==  Color.Black) {
 
                         if (BlackRook1.getStatus(chessBoard).numberOfMoves == 0
+                                && BlackRook1.getStatus(chessBoard).playStatus == PlayStatus.Active
                                 && ChessSpace.B8.getOccupyingPiece(chessBoard) == null
                                 && ChessSpace.C8.getOccupyingPiece(chessBoard) == null
                                 && ChessSpace.D8.getOccupyingPiece(chessBoard) == null
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.D8) == false)
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.C8) == false)
                         ) {
-                            possibleMoves.add(new ChessMove(chessBoard, startingSpace, ChessSpace.C8, ChessMove.Type.Castle));
+                            ChessMove possibleCastleMove = new ChessMove(chessBoard, startingSpace, ChessSpace.C8, ChessMove.Type.Castle);
+                            possibleMoves.add(possibleCastleMove);
                         }
 
                         if (BlackRook2.getStatus(chessBoard).numberOfMoves == 0
+                                && BlackRook2.getStatus(chessBoard).playStatus == PlayStatus.Active
                                 && ChessSpace.G8.getOccupyingPiece(chessBoard) == null
                                 && ChessSpace.F8.getOccupyingPiece(chessBoard) == null
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.F8) == false)
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.G8) == false)
                         ) {
-                            possibleMoves.add(new ChessMove(chessBoard, startingSpace, ChessSpace.G8, ChessMove.Type.Castle));
+                            ChessMove possibleCastleMove = new ChessMove(chessBoard, startingSpace, ChessSpace.G8, ChessMove.Type.Castle);
+                            possibleMoves.add(possibleCastleMove);
                         }
 
                     } else {
 
                         if (WhiteRook1.getStatus(chessBoard).numberOfMoves == 0
+                                && WhiteRook1.getStatus(chessBoard).playStatus == PlayStatus.Active
                                 && ChessSpace.B1.getOccupyingPiece(chessBoard) == null
                                 && ChessSpace.C1.getOccupyingPiece(chessBoard) == null
                                 && ChessSpace.D1.getOccupyingPiece(chessBoard) == null
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.C1) == false)
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.D1) == false)
                         ) {
-                            possibleMoves.add(new ChessMove(chessBoard, startingSpace, ChessSpace.C1, ChessMove.Type.Castle));
+                            ChessMove possibleCastleMove = new ChessMove(chessBoard, startingSpace, ChessSpace.C1, ChessMove.Type.Castle);
+                            possibleMoves.add(possibleCastleMove);
+
                         }
 
                         if (WhiteRook2.getStatus(chessBoard).numberOfMoves == 0
+                                && WhiteRook2.getStatus(chessBoard).playStatus == PlayStatus.Active
                                 && ChessSpace.G1.getOccupyingPiece(chessBoard) == null
                                 && ChessSpace.F1.getOccupyingPiece(chessBoard) == null
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.G1) == false)
+                                && (chessBoard.isSpaceAttackableByOpponent(ChessSpace.F1) == false)
                         ) {
-                            possibleMoves.add(new ChessMove(chessBoard, startingSpace, ChessSpace.G1, ChessMove.Type.Castle));
+                            ChessMove possibleCastleMove = new ChessMove(chessBoard, startingSpace, ChessSpace.G1, ChessMove.Type.Castle);
+                            possibleMoves.add(possibleCastleMove);
                         }
 
                     }
@@ -245,8 +268,7 @@ public enum ChessPiece {
                 }
 
                 // en passant
-                //TODO This is not right
-                ChessMove previousMove = chessBoard.previousMove;
+                ChessMove previousMove = chessBoard.previousMoves.isEmpty() ? null : chessBoard.previousMoves.peek();
                 if (previousMove != null && previousMove.fromChessPieceType == Type.Pawn
                         && previousMove.from.y == yDirection
                         && previousMove.to.y == yDirection + 2
@@ -344,11 +366,11 @@ public enum ChessPiece {
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     int value = 0;
-                    if (intOffsets.length > i*8+j) {
+                    if (intOffsets.length > i * 8 + j) {
                         value = intOffsets[i * 8 + j];
                     }
 
-                    whiteStrengthArray[7-i][j] = value;
+                    whiteStrengthArray[7 - i][j] = value;
                     blackStrengthArray[i][j] = value;
                 }
             }

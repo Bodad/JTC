@@ -10,8 +10,8 @@ import java.util.Stack;
 public class ChessGame {
     Logger logger = new Logger();
 
-    static Player blackPlayer = new Player("Tom", ChessPiece.Color.Black, new TomChessPlayLogic());
-    static Player whitePlayer = new Player("Jake", ChessPiece.Color.White, new JakeChessPlayLogic());
+    static Player whitePlayer = new Player("Tom", ChessPiece.Color.White, new TomChessPlayLogic());
+    static Player blackPlayer = new Player("Jake", ChessPiece.Color.Black, new ManualPlayLogic());
 
     Stack<ChessPlay> chessPlays = new Stack<>();
 
@@ -26,10 +26,12 @@ public class ChessGame {
                 chessBoard.winner = chessBoard.defensivePlayer;
                 break;
             }
-                System.out.println(String.format("Player %s moving %s", chessBoard.offensivePlayer.name, chessMove));
+            System.out.println(String.format("Player %s moving %s", chessBoard.offensivePlayer.name, chessMove));
+            ChessMove expectedOpponentsMove = chessBoard.expectedOpponentsMove;
+            chessBoard = chessMove.execute(chessBoard);
+//            System.out.println(String.format("           opponent expectedd move: %s", expectedOpponentsMove));
 
-                chessBoard = chessMove.execute(chessBoard);
-                chessPlays.add(new ChessPlay(chessBoard, chessMove));
+            chessPlays.add(new ChessPlay(chessBoard, chessMove));
 
             //chessBoard.switchPlayers();
         }

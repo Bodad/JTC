@@ -3,9 +3,8 @@ package root;
 import business.Logger;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
-import java.util.Stack;
-import java.util.stream.Collectors;
 
 public class TomChessPlayLogic extends ChessPlayLogic {
     Random random = new Random();
@@ -14,48 +13,58 @@ public class TomChessPlayLogic extends ChessPlayLogic {
 
     @Override
     public ChessMove choosePreferredMove(ChessBoard chessBoard) {
-        return choosePreferredMove(chessBoard, 0);
+        boolean redo = false;
+        ChessMove preferredMove = alphaBetaMax(chessBoard, null, null, 0, 3);
+//        while (redo) {
+//            preferredMove = alphaBetaMax(chessBoard, null, null, 0, 3);
+//        }
+        chessBoard.preferredMove = preferredMove;
+        return preferredMove;
     }
 
-    private ChessMove choosePreferredMove(ChessBoard chessBoard, int depth) {
 
-        int[] highestStrength = new int[1];
-        highestStrength[0] = -100000;
-        ChessMove[] highestChessMove = new ChessMove[1];
+    private ChessMove alphaBetaMax(ChessBoard chessBoard, ChessMove alpha, ChessMove beta, int depth, int maxDepth) {
+        if (depth == maxDepth) {
+            ChessMove finalChessMove = chessBoard.previousMoves.elementAt(chessBoard.previousMoves.size() - depth);
+            return finalChessMove;
+        }
 
-        List<ChessMove> chessMoves1 = chessBoard.getAllPossibleMoves();
-        chessMoves1.forEach(chessMove1 -> {
-            ChessBoard chessBoard1 = chessMove1.execute(chessBoard);
-if (depth < 1)
-            logger.info("Depth: {}, Move: {}, Strength: {}", depth, chessMove1, chessBoard1.evaluteStrength());
+        List<ChessMove> allPossibleMoves = chessBoard.getAllPossibleMoves();
 
-            if (depth == 3){
-                int strength = chessBoard1.evaluteStrength();
-                if (strength > highestStrength[0]) {
-                    highestChessMove[0] = chessMove1;
-                    highestStrength[0] = strength;
-                }
+        for(ChessMove chessMove : allPossibleMoves){
+            ChessBoard newChessBoard = chessMove.execute(chessBoard);
+            ChessMove newMove = alphaBetaMin(newChessBoard, alpha, beta, depth+1, maxDepth);
 
-            }else {
-
-
-                ChessMove opponentsMove = choosePreferredMove(chessBoard1, depth + 1);
-                ChessBoard chessBoard2 = opponentsMove.execute(chessBoard1);
-
-                List<ChessMove> board2Moves = chessBoard2.getAllPossibleMoves();
-
-                board2Moves.forEach(chessMove2 -> {
-                    ChessBoard chessBoard3 = chessMove2.execute(chessBoard2);
-                    int strength = chessBoard3.evaluteStrength();
-                    if (strength > highestStrength[0]) {
-                        highestChessMove[0] = chessMove1;
-                        highestStrength[0] = strength;
-                    }
-                });
+            if (beta!= null && newMove.finalBoardStrength >= beta.finalBoardStrength){
+                return beta;
             }
+            if (alpha == null || newMove.finalBoardStrength > alpha.finalBoardStrength){
+                alpha = newMove;
+            }
+        }
+        return alpha;
+    }
 
-        });
+    private ChessMove alphaBetaMin(ChessBoard chessBoard, ChessMove alpha, ChessMove beta, int depth, int maxDepth){
+        if (depth == maxDepth) {
+            ChessMove finalChessMove = chessBoard.previousMoves.elementAt(chessBoard.previousMoves.size() - depth);
+            return finalChessMove;
+        }
+        List<ChessMove> allPossibleMoves = chessBoard.getAllPossibleMoves();
 
-        return highestChessMove[0];
+        for(ChessMove chessMove : allPossibleMoves){
+            ChessBoard newChessBoard = chessMove.execute(chessBoard);
+            chessMove.finalBoardStrength *= -1;
+
+
+            ChessMove newChessMove = alphaBetaMax(newChessBoard, alpha, beta, depth+1, maxDepth);
+            if (alpha != null && newChessMove.finalBoardStrength <= alpha.finalBoardStrength){
+                return alpha;
+            }
+            if (beta == null || newChessMove.finalBoardStrength < beta.finalBoardStrength){
+                beta = newChessMove;
+            }
+        }
+        return beta;
     }
 }

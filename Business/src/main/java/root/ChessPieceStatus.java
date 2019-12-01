@@ -6,6 +6,7 @@ public class ChessPieceStatus {
     public final ChessSpace currentSpace;
     public final ChessPiece.Type actAsType;
     public final ChessPiece.PlayStatus playStatus;
+    public int strength;
 
     public ChessPieceStatus(ChessPiece chessPiece, ChessSpace currentSpace){
         this(chessPiece, currentSpace, chessPiece.type, 0, ChessPiece.PlayStatus.Active);
@@ -32,6 +33,9 @@ public class ChessPieceStatus {
     }
 
     public int evaluteStrength() {
+        if (currentSpace == null) return 0;
+        if (playStatus == ChessPiece.PlayStatus.Captured) return 0;
+
         return actAsType.evaluateStrength(currentSpace, chessPiece.color);
     }
 }

@@ -7,16 +7,46 @@ import java.util.stream.Collectors;
 import static root.ChessPiece.*;
 
 public class ChessBoard {
-    public ChessMove previousMove;
     public Player winner;
+
+    public ChessMove preferredMove;
+    public ChessMove expectedOpponentsMove;
+    public ChessMove executedMove;
+    public Stack<ChessMove> previousMoves = new Stack<>();
+
+    public List<ChessMove> possibleMoves = new ArrayList<>();
 
 //    public static List<List<ChessSpace>> spaceGrid = new ArrayList<>();
 
-    HashMap<ChessSpace, SpaceStatus> spaceStatusMap = new HashMap<>();
-    HashMap<ChessPiece, ChessPieceStatus> chessPieceStatusMap = new HashMap<>();
+    final HashMap<ChessSpace, SpaceStatus> spaceStatusMap;
+    final HashMap<ChessPiece, ChessPieceStatus> chessPieceStatusMap;
 
-    Player offensivePlayer;
-    Player defensivePlayer;
+    final Player offensivePlayer;
+    final Player defensivePlayer;
+
+    public int myStrength;
+    public int opponentStrength;
+    public int overallStrength;
+
+    public int evaluateStrength(){
+            chessPieceStatusMap.values().parallelStream().forEach(status->{
+                status.strength = status.evaluteStrength();
+            });
+
+            myStrength = chessPieceStatusMap.values().stream()
+                    .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == defensivePlayer.color)
+                    .mapToInt(chessPieceStatus -> chessPieceStatus.strength)
+                    .reduce(0, Integer::sum);
+
+            opponentStrength = chessPieceStatusMap.values().stream()
+                    .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == offensivePlayer.color)
+                    .mapToInt(chessPieceStatus -> chessPieceStatus.strength)
+                    .reduce(0, Integer::sum);
+
+            overallStrength = myStrength - opponentStrength;
+
+            return overallStrength;
+    }
 
     public ChessBoard(ChessBoard chessBoard) {
         this.offensivePlayer = chessBoard.defensivePlayer;
@@ -26,11 +56,16 @@ public class ChessBoard {
         this.chessPieceStatusMap = (HashMap<ChessPiece, ChessPieceStatus>) chessBoard.chessPieceStatusMap.clone();
 
         winner = chessBoard.winner;
+        this.previousMoves = (Stack<ChessMove>)chessBoard.previousMoves.clone();
+        this.previousMoves.push(chessBoard.executedMove);
     }
 
     public ChessBoard(Player offensivePlayer, Player defensivePlayer) {
         this.offensivePlayer = offensivePlayer;
         this.defensivePlayer = defensivePlayer;
+
+        this.spaceStatusMap = new HashMap<>();
+        this.chessPieceStatusMap = new HashMap<>();
 
         spaceStatusMap.clear();
         for (ChessSpace space : ChessSpace.values()) {
@@ -44,6 +79,7 @@ public class ChessBoard {
                 chessPieceStatusMap.put(space.initialChessPiece, chessPieceStatus);
             }
         }
+        evaluateStrength();
     }
 
 
@@ -99,37 +135,41 @@ public class ChessBoard {
         return capturedChessPiece;
     }
 
-    public List<ChessMove> getAllPossibleMoves() {
-        List<ChessMove> possibleMoves = chessPieceStatusMap.values().stream()
-                .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == offensivePlayer.color)
+    public List<ChessMove> getAllPossibleMoves(Player player){
+        possibleMoves = chessPieceStatusMap.values().stream()
+                .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == player.color)
                 .flatMap(chessPieceStatus -> chessPieceStatus.actAsType.getPossibleMoves(this, chessPieceStatus.currentSpace).stream())
                 .collect(Collectors.toList());
+
+//
+//        if (player == offensivePlayer) {
+//            possibleMoves = possibleMoves.stream().filter(m-> (m.fromChessPieceType!= Type.King) || ((m.fromChessPieceType == Type.King) && (isSpaceAttackableByOpponent(m.to)==false))).collect(Collectors.toList());
+//
+//
+//            if (player.color == Color.White) {
+//                possibleMoves = possibleMoves.stream().filter(move -> isSpaceAttackableByOpponent(WhiteKing.getStatus(this).currentSpace) == false).collect(Collectors.toList());
+//            } else {
+//                possibleMoves = possibleMoves.stream().filter(move -> isSpaceAttackableByOpponent(BlackKing.getStatus(this).currentSpace) == false).collect(Collectors.toList());
+//            }
+//        }
 
         return possibleMoves;
     }
 
-    public void switchPlayers() {
-        Player temp = offensivePlayer;
-        offensivePlayer = defensivePlayer;
-        defensivePlayer = temp;
+    public List<ChessMove> getAllPossibleMoves() {
+        return getAllPossibleMoves(offensivePlayer);
     }
 
-    public int evaluteStrength() {
-        int myStrength = chessPieceStatusMap.values().stream()
-                .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == defensivePlayer.color)
-                .mapToInt(chessPieceStatus -> chessPieceStatus.evaluteStrength())
-                .reduce(0, Integer::sum);
-
-        int opponentStrength = chessPieceStatusMap.values().stream()
-                .filter(chessPieceStatus -> chessPieceStatus.playStatus == PlayStatus.Active && chessPieceStatus.chessPiece.color == offensivePlayer.color)
-                .mapToInt(chessPieceStatus -> chessPieceStatus.evaluteStrength())
-                .reduce(0, Integer::sum);
-
-
-        return myStrength - opponentStrength;
+    @Override
+    public String toString() {
+        return String.format("Current Player: %s.  Expected Move: %s,  Opponent Expected Move: %s, Strength: %d", offensivePlayer.name, preferredMove, expectedOpponentsMove, overallStrength);
     }
 
-//    static {
+    public boolean isSpaceAttackableByOpponent(ChessSpace chessSpace) {
+        return getAllPossibleMoves(defensivePlayer).stream().filter(move->move.to == chessSpace).findFirst().isPresent();
+    }
+
+    //    static {
 //        spaceGrid = new ArrayList<>();
 //
 //        for (int i = 0; i < 8; i++) {

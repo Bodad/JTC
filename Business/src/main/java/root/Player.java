@@ -34,8 +34,8 @@ public class Player {
         Optional<ChessMove> kingCaptureMove = chessMoves.stream().filter(chessMove -> chessMove.capturedChessPieceType == ChessPiece.Type.King).findFirst();
         if (kingCaptureMove.isPresent()) return kingCaptureMove.get();
 
-        ChessMove finalMove = chessPlayLogic.choosePreferredMove(chessBoard);
-        return finalMove;
+        chessBoard.preferredMove = chessPlayLogic.choosePreferredMove(chessBoard);
+        return chessBoard.preferredMove;
     }
 
     private List<ChessMove> getAllPossibleMoves(ChessBoard chessBoard) {
