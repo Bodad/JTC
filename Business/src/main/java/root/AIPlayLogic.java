@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class TomChessPlayLogic extends ChessPlayLogic {
+public class AIPlayLogic extends ChessPlayLogic {
     Random random = new Random();
 
     Logger logger = new Logger();
@@ -14,7 +14,7 @@ public class TomChessPlayLogic extends ChessPlayLogic {
     @Override
     public ChessMove choosePreferredMove(ChessBoard chessBoard) {
         boolean redo = false;
-        ChessMove preferredMove = alphaBetaMax(chessBoard, null, null, 0, 3);
+        ChessMove preferredMove = alphaBetaMax(chessBoard, null, null, 0, 4);
 //        while (redo) {
 //            preferredMove = alphaBetaMax(chessBoard, null, null, 0, 3);
 //        }
@@ -25,7 +25,9 @@ public class TomChessPlayLogic extends ChessPlayLogic {
 
     private ChessMove alphaBetaMax(ChessBoard chessBoard, ChessMove alpha, ChessMove beta, int depth, int maxDepth) {
         if (depth == maxDepth) {
+            //ChessMove finalChessMove = chessBoard.previousMoves.elementAt(chessBoard.previousMoves.size() - depth);
             ChessMove finalChessMove = chessBoard.previousMoves.elementAt(chessBoard.previousMoves.size() - depth);
+            finalChessMove.finalBoardStrength *= -1;
             return finalChessMove;
         }
 
@@ -48,6 +50,7 @@ public class TomChessPlayLogic extends ChessPlayLogic {
     private ChessMove alphaBetaMin(ChessBoard chessBoard, ChessMove alpha, ChessMove beta, int depth, int maxDepth){
         if (depth == maxDepth) {
             ChessMove finalChessMove = chessBoard.previousMoves.elementAt(chessBoard.previousMoves.size() - depth);
+            finalChessMove.finalBoardStrength *= -1;
             return finalChessMove;
         }
         List<ChessMove> allPossibleMoves = chessBoard.getAllPossibleMoves();

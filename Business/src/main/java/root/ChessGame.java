@@ -2,16 +2,13 @@ package root;
 
 import business.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Stack;
 
 public class ChessGame {
     Logger logger = new Logger();
 
-    static Player whitePlayer = new Player("Tom", ChessPiece.Color.White, new TomChessPlayLogic());
-    static Player blackPlayer = new Player("Jake", ChessPiece.Color.Black, new ManualPlayLogic());
+    static Player whitePlayer = new Player("Jake", ChessPiece.Color.White, new ManualPlayLogic());
+    static Player blackPlayer = new Player("Tom", ChessPiece.Color.Black, new AIPlayLogic());
 
     Stack<ChessPlay> chessPlays = new Stack<>();
 
