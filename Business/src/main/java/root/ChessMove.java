@@ -59,8 +59,8 @@ public class ChessMove {
         ChessBoard newChessBoard = new ChessBoard(chessBoard);
         type.executeMove(this, newChessBoard);
         newChessBoard.evaluateStrength();
-        strength = newChessBoard.overallStrength - chessBoard.overallStrength;
-        finalBoardStrength = newChessBoard.overallStrength;
+        strength = newChessBoard.getCurrentPlayerStrength() - chessBoard.getCurrentPlayerStrength();
+        finalBoardStrength = newChessBoard.getCurrentPlayerStrength();
         return newChessBoard;
     }
 

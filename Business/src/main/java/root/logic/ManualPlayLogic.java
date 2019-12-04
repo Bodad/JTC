@@ -1,10 +1,13 @@
-package root;
+package root.logic;
+
+import root.ChessBoard;
+import root.ChessMove;
+import root.ChessSpace;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class ManualPlayLogic extends ChessPlayLogic {
     Random random = new Random();

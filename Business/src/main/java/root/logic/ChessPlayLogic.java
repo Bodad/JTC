@@ -1,4 +1,7 @@
-package root;
+package root.logic;
+
+import root.ChessBoard;
+import root.ChessMove;
 
 import java.util.List;
 
