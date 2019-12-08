@@ -9,8 +9,8 @@ import java.util.Stack;
 public class ChessGame {
     Logger logger = new Logger();
 
-    static Player whitePlayer = new Player("Jake", ChessPiece.Color.White, new ManualPlayLogic());
-    static Player blackPlayer = new Player("Tom", ChessPiece.Color.Black, new AIPlayLogic());
+    static Player whitePlayer = new Player("Jake", ChessPiece.Color.White, new AIPlayLogic());
+    static Player blackPlayer = new Player("Tom", ChessPiece.Color.Black, new ManualPlayLogic());
 
     Stack<ChessBoard> chessPlays = new Stack<>();
 

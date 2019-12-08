@@ -9,7 +9,8 @@ import static root.ChessPiece.*;
 public class ChessBoard {
     public Player winner;
 
-    public ChessMove executedMove;
+    public ChessMove enterMove;
+    public ChessMove exitMove;
 
     public ChessMove preferredMove;
     public ChessMove expectedOpponentsMove;
@@ -53,7 +54,8 @@ public class ChessBoard {
 
         winner = chessBoard.winner;
         this.previousMoves = (Stack<ChessMove>)chessBoard.previousMoves.clone();
-        this.previousMoves.push(chessBoard.executedMove);
+        this.previousMoves.push(chessBoard.exitMove);
+        this.enterMove = chessBoard.exitMove;
     }
 
     public ChessBoard(Player offensivePlayer, Player defensivePlayer) {
@@ -144,18 +146,27 @@ public class ChessBoard {
         return getAllPossibleMoves(offensivePlayer);
     }
 
-    @Override
-    public String toString() {
-        return String.format("Current Player: %s.  Expected Move: %s,  Opponent Expected Move: %s, Strength: %d",
-                offensivePlayer.name, preferredMove, expectedOpponentsMove, this.getCurrentPlayerStrength());
-    }
-
-    public int getCurrentPlayerStrength() {
+    public int getOffensivePlayerStrength() {
         return offensivePlayer.color == Color.Black ? blackStrength : whiteStrength;
     }
+
+    public int getDefensivePlayerStrength() {
+        return defensivePlayer.color == Color.Black ? blackStrength : whiteStrength;
+    }
+
 
     public boolean isSpaceAttackableByOpponent(ChessSpace chessSpace) {
         return getAllPossibleMoves(defensivePlayer).stream().filter(move->move.to == chessSpace).findFirst().isPresent();
     }
 
+    @Override
+    public String toString() {
+        return String.format("Enter Move: %s,  Preferred Move: %s, White: %d, Black: %d, Black Advantage: %d",
+                enterMove, preferredMove, this.whiteStrength, this.blackStrength, this.blackStrength - this.whiteStrength);
+    }
+
+
+    public int getColorAdvantage(Color playerColor) {
+        return playerColor == Color.Black ? blackStrength-whiteStrength : whiteStrength-blackStrength;
+    }
 }

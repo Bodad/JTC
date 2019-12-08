@@ -3,12 +3,9 @@ package root.logic;
 import business.Logger;
 import root.ChessBoard;
 import root.ChessMove;
+import root.ChessPiece;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Stream;
+import java.util.*;
 
 public class AIPlayLogic extends ChessPlayLogic {
     Random random = new Random();
@@ -19,42 +16,81 @@ public class AIPlayLogic extends ChessPlayLogic {
     public ChessMove choosePreferredMove(ChessBoard chessBoard) {
         boolean redo = false;
 
-        ChessMove bestChessMove = evaluateMyMoves(chessBoard, 2);
+        ChessEvaluation chessEvaluation = evaluateMyMoves(chessBoard, 3);
 
-        chessBoard.preferredMove = bestChessMove;
+        chessBoard.preferredMove = chessEvaluation.chosenChessMove;
         return chessBoard.preferredMove;
     }
 
-    private ChessMove evaluateMyMoves(ChessBoard chessBoard, int depth) {
+    private ChessEvaluation evaluateMyMoves(ChessBoard chessBoard, int depth) {
+        ChessEvaluation chessEvaluation = new ChessEvaluation();
         List<ChessMove> allPossibleMoves = chessBoard.getAllPossibleMoves();
-        ChessMove bestChessMove = null;
+
+        ChessPiece.Color playerColor = chessBoard.offensivePlayer.color;
+        ChessPiece.Color opponentColor = playerColor == ChessPiece.Color.Black ? ChessPiece.Color.White : ChessPiece.Color.Black;
 
         if (depth == 0) {
-            bestChessMove = allPossibleMoves.stream()
-                    .min(Comparator.comparing(chessMove->chessMove.execute(chessBoard).getCurrentPlayerStrength()))
-                    .get();
+            for (ChessMove chessMove : allPossibleMoves){
+                ChessBoard newChessBoard = chessMove.execute(chessBoard);
+                if (chessEvaluation.chosenChessBoard == null || chessEvaluation.chosenChessBoard.getColorAdvantage(playerColor) < newChessBoard.getColorAdvantage(playerColor)){
+                    chessEvaluation.chosenChessBoard = newChessBoard;
+                    chessEvaluation.chosenChessMove = chessMove;
+                }
+                chessEvaluation.evaluatedChessBoards.add(newChessBoard);
+            }
         }else{
-            bestChessMove = allPossibleMoves.stream()
-                    .max(Comparator.comparing(chessMove -> evaluateMyOpponentsMoves(chessMove.execute(chessBoard), depth-1).finalBoardStrength))
-                    .get();
+            for (ChessMove chessMove : allPossibleMoves) {
+                ChessBoard newChessBoard = chessMove.execute(chessBoard);
+                ChessEvaluation childChessEvaluation = evaluateMyOpponentsMoves(newChessBoard, depth - 1);
+                childChessEvaluation.parentChessMove = chessMove;
+                childChessEvaluation.parentChessBoard = newChessBoard;
+                chessEvaluation.childChessEvaluations.add(childChessEvaluation);
+            }
+
+            ChessEvaluation chosenChessEvaluation = chessEvaluation.childChessEvaluations.stream().min(Comparator.comparing(ce -> ce.chosenChessMove.getColorAdvantage(opponentColor))).get();
+            chessEvaluation.setChosenEvaluation(chosenChessEvaluation);
+            //maybe//
+            chessEvaluation.childChessEvaluations.clear();
         }
-        return bestChessMove;
+        return chessEvaluation;
     }
 
-    private ChessMove evaluateMyOpponentsMoves(ChessBoard chessBoard, int depth) {
+    private ChessEvaluation evaluateMyOpponentsMoves(ChessBoard chessBoard, int depth) {
+        ChessEvaluation chessEvaluation = new ChessEvaluation();
+
+        ChessPiece.Color playerColor = chessBoard.offensivePlayer.color;
+        ChessPiece.Color opponentColor = playerColor == ChessPiece.Color.Black ? ChessPiece.Color.White : ChessPiece.Color.Black;
+
         List<ChessMove> allPossibleMoves = chessBoard.getAllPossibleMoves();
-        ChessMove bestChessMove = null;
 
         if (depth == 0) {
-            bestChessMove = allPossibleMoves.stream()
-                    .min(Comparator.comparing(chessMove -> chessMove.execute(chessBoard).getCurrentPlayerStrength()))
-                    .get();
+            for (ChessMove chessMove : allPossibleMoves){
+                ChessBoard newChessBoard = chessMove.execute(chessBoard);
+                if (chessEvaluation.chosenChessBoard == null || chessEvaluation.chosenChessBoard.getColorAdvantage(playerColor) < newChessBoard.getColorAdvantage(playerColor)){
+                    chessEvaluation.chosenChessBoard = newChessBoard;
+                    chessEvaluation.chosenChessMove = chessMove;
+                }
+                chessEvaluation.evaluatedChessBoards.add(newChessBoard);
+            }
         }else{
-            bestChessMove = allPossibleMoves.stream()
-                    .max(Comparator.comparing(chessMove -> evaluateMyMoves(chessMove.execute(chessBoard), depth-1).finalBoardStrength))
-                    .get();
+            for (ChessMove chessMove : allPossibleMoves) {
+                ChessBoard newChessBoard = chessMove.execute(chessBoard);
+                ChessEvaluation childChessEvaluation = evaluateMyOpponentsMoves(newChessBoard, depth - 1);
+                childChessEvaluation.parentChessMove = chessMove;
+                childChessEvaluation.parentChessBoard = newChessBoard;
+                chessEvaluation.childChessEvaluations.add(childChessEvaluation);
+            }
+
+            ChessEvaluation chosenChessEvaluation = chessEvaluation.childChessEvaluations.stream().min(Comparator.comparing(ce -> ce.chosenChessMove.getColorAdvantage(opponentColor))).get();
+            chessEvaluation.setChosenEvaluation(chosenChessEvaluation);
+            // Maybe //
+            chessEvaluation.childChessEvaluations.clear();
+
+//            bestChessMove = allPossibleMoves.stream()
+//                    .min(Comparator.comparing(chessMove -> evaluateMyMoves(chessMove.execute(chessBoard), depth-1).finalBoardStrength))
+//                    .get();
         }
-        return bestChessMove;
+        return chessEvaluation;
     }
 
 }

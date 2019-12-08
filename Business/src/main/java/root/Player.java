@@ -32,9 +32,9 @@ public class Player {
 
         if (chessMoves.size() == 0) return null;
 
-        Optional<ChessMove> kingCaptureMove = chessMoves.stream().filter(chessMove -> chessMove.capturedChessPieceType == ChessPiece.Type.King).findFirst();
-        if (kingCaptureMove.isPresent()) return kingCaptureMove.get();
-
+//        Optional<ChessMove> kingCaptureMove = chessMoves.stream().filter(chessMove -> chessMove.capturedChessPieceType == ChessPiece.Type.King).findFirst();
+//        if (kingCaptureMove.isPresent()) return kingCaptureMove.get();
+//
         chessBoard.preferredMove = chessPlayLogic.choosePreferredMove(chessBoard);
         return chessBoard.preferredMove;
     }
@@ -55,5 +55,10 @@ public class Player {
     public void removePiece(ChessPiece capturedChessPiece) {
         activeChessPieces.remove(capturedChessPiece);
         capturedChessPieces.add(capturedChessPiece);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Player %s (%s)", name, color);
     }
 }

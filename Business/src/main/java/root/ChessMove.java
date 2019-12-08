@@ -12,8 +12,8 @@ public class ChessMove {
     public final ChessPiece.Type capturedChessPieceType;
     public final ChessPiece fromChessPiece;
     public final ChessPiece.Type fromChessPieceType;
-    public int finalBoardStrength;
-    public int strength;
+    public int whiteBoardStrength;
+    public int blackBoardStrength;
 
     public ChessMove(ChessBoard chessBoard, ChessSpace from, ChessSpace to) {
         this(chessBoard, from, to, ChessMove.Type.Normal);
@@ -29,14 +29,18 @@ public class ChessMove {
         this.fromChessPieceType = fromChessPiece.getStatus(chessBoard).actAsType;
     }
 
+    public int getResultantPlayerStrength(){
+        return fromChessPiece.color == ChessPiece.Color.Black ? blackBoardStrength : whiteBoardStrength;
+    }
+
 
     @Override
     public String toString() {
         if (capturedChessPiece != null) {
             return String.format("%s %s from %s to %s capturing %s %s %s (Strength: %d)",
-                    fromChessPiece.color, fromChessPieceType, from, to, capturedChessPiece.color, capturedChessPieceType, type == Type.Normal ? "" : type, finalBoardStrength);
+                    fromChessPiece.color, fromChessPieceType, from, to, capturedChessPiece.color, capturedChessPieceType, type == Type.Normal ? "" : type, getResultantPlayerStrength());
         } else {
-            return String.format("%s %s from %s to %s %s (Strength: %d)", fromChessPiece.color, fromChessPieceType, from, to, type == Type.Normal ? "" : type, finalBoardStrength);
+            return String.format("%s %s from %s to %s %s (Strength: %d)", fromChessPiece.color, fromChessPieceType, from, to, type == Type.Normal ? "" : type, getResultantPlayerStrength());
         }
     }
 
@@ -55,13 +59,17 @@ public class ChessMove {
     }
 
     public ChessBoard execute(ChessBoard chessBoard) {
-        chessBoard.executedMove = this;
+        chessBoard.exitMove = this;
         ChessBoard newChessBoard = new ChessBoard(chessBoard);
         type.executeMove(this, newChessBoard);
         newChessBoard.evaluateStrength();
-        strength = newChessBoard.getCurrentPlayerStrength() - chessBoard.getCurrentPlayerStrength();
-        finalBoardStrength = newChessBoard.getCurrentPlayerStrength();
+        whiteBoardStrength = newChessBoard.whiteStrength;
+        blackBoardStrength = newChessBoard.blackStrength;
         return newChessBoard;
+    }
+
+    public int getColorAdvantage(ChessPiece.Color opponentColor) {
+        return opponentColor == ChessPiece.Color.Black ? blackBoardStrength - whiteBoardStrength : whiteBoardStrength - blackBoardStrength;
     }
 
     public static enum Type {
@@ -83,10 +91,6 @@ public class ChessMove {
                 }
 
                 ChessPiece capturedChessPiece = newChessBoard.executeMove(chessMove.from, chessMove.to, newActAsType);
-
-                if (ChessPiece.Type.King.matches(capturedChessPiece) ){
-                    newChessBoard.winner = newChessBoard.offensivePlayer;
-                }
 
                 return newChessBoard;
             }
